@@ -1,6 +1,7 @@
 "use client"
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { User, UserRole, LoginCredentials, AuthState } from '@/types/auth';
 
 interface AuthContextType extends AuthState {
@@ -52,6 +53,7 @@ const demoAccounts = {
 };
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const router = useRouter();
   const [authState, setAuthState] = useState<AuthState>({
     user: null,
     isAuthenticated: false,
@@ -133,6 +135,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       isAuthenticated: false,
       isLoading: false
     });
+    // Redirect to login page after logout
+    router.push('/');
   };
 
   return (
