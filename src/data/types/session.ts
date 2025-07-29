@@ -12,7 +12,12 @@ export interface Session {
     avatar: string;
     company: string;
   };
-  attendees: number;
+  attendees: Array<{
+    name: string;
+    avatar: string;
+    role: string;
+    company: string;
+  }>;
   maxAttendees: number;
   tags: string[];
 }

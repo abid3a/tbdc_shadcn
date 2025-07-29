@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { SessionSidePanel } from '@/components/ui/session-side-panel';
 import {
   Calendar,
   Clock,
@@ -25,7 +25,7 @@ import {
   Star
 } from 'lucide-react';
 import { Session } from '@/data/types';
-import { sessions, getSessionConnections } from '@/data';
+import { sessions, getSessionConnections, getSessionWithAttendees } from '@/data';
 
 // Helper functions
 const getStatusColor = (status: string) => {
@@ -60,175 +60,68 @@ const getTypeColor = (type: string) => {
 const typedSessions = sessions as Session[];
 
 // Session Card Component
-function SessionCard({ session }: { session: Session }) {
+function SessionCard({ session, onSessionClick }: { session: Session; onSessionClick: (session: Session) => void }) {
   const sessionConnections = getSessionConnections(session.id);
 
   return (
-    <Sheet>
-      <SheetTrigger asChild>
-        <Card className="hover:shadow-md transition-shadow cursor-pointer">
-          <CardHeader>
-            <div className="flex items-start justify-between">
-              <div className="space-y-1">
-                <CardTitle className="text-lg">{session.title}</CardTitle>
-                <CardDescription className="line-clamp-2">
-                  {session.description}
-                </CardDescription>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <Badge className={getTypeColor(session.type)}>
-                {session.type}
-              </Badge>
-              <Badge className={getStatusColor(session.status)}>
-                {session.status}
-              </Badge>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-              <div className="flex items-center space-x-1">
-                <Calendar className="h-4 w-4" />
-                <span>{session.date}</span>
-              </div>
-              <div className="flex items-center space-x-1">
-                <Clock className="h-4 w-4" />
-                <span>{session.time}</span>
-              </div>
-              <div className="flex items-center space-x-1">
-                <Users className="h-4 w-4" />
-                <span>{session.attendees}/{session.maxAttendees}</span>
-              </div>
-            </div>
-            
-            <div className="flex items-center space-x-3">
-              <Avatar className="h-8 w-8">
-                <AvatarImage src={session.mentor.avatar} alt={session.mentor.name} />
-                <AvatarFallback>{session.mentor.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
-              </Avatar>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate">{session.mentor.name}</p>
-                <p className="text-xs text-muted-foreground truncate">{session.mentor.company}</p>
-              </div>
-            </div>
-            
-            <div className="flex flex-wrap gap-1">
-              {session.tags.map((tag, index) => (
-                <Badge key={index} variant="secondary" className="text-xs">
-                  {tag}
-                </Badge>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      </SheetTrigger>
-      <SheetContent className="w-4/5 sm:max-w-md lg:max-w-lg xl:max-w-xl">
-        <SheetHeader>
-          <SheetTitle>{session.title}</SheetTitle>
-          <SheetDescription>{session.description}</SheetDescription>
-        </SheetHeader>
-        <div className="px-6 space-y-6 pt-6">
-          <div className="flex items-center space-x-2">
-            <Badge className={getTypeColor(session.type)}>
-              {session.type}
-            </Badge>
-            <Badge className={getStatusColor(session.status)}>
-              {session.status}
-            </Badge>
-          </div>
-          
-          <Separator />
-          
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              <div>
-                <span className="text-muted-foreground">Date:</span>
-                <p className="font-medium">{session.date}</p>
-              </div>
-              <div>
-                <span className="text-muted-foreground">Time:</span>
-                <p className="font-medium">{session.time}</p>
-              </div>
-              <div>
-                <span className="text-muted-foreground">Duration:</span>
-                <p className="font-medium">{session.duration}</p>
-              </div>
-              <div>
-                <span className="text-muted-foreground">Attendees:</span>
-                <p className="font-medium">{session.attendees}/{session.maxAttendees}</p>
-              </div>
-            </div>
-            
-            <div>
-              <h4 className="font-medium mb-2">Mentor</h4>
-              <div className="flex items-center space-x-3 p-3 border rounded-lg">
-                <Avatar className="h-12 w-12">
-                  <AvatarImage src={session.mentor.avatar} alt={session.mentor.name} />
-                  <AvatarFallback>{session.mentor.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
-                </Avatar>
-                <div>
-                  <p className="font-medium">{session.mentor.name}</p>
-                  <p className="text-sm text-muted-foreground">{session.mentor.company}</p>
-                </div>
-              </div>
-            </div>
-            
-            <div>
-              <h4 className="font-medium mb-2">Tags</h4>
-              <div className="flex flex-wrap gap-1">
-                {session.tags.map((tag, index) => (
-                  <Badge key={index} variant="secondary">
-                    {tag}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-            
-            <div>
-              <h4 className="font-medium mb-2">Participants ({sessionConnections.length})</h4>
-              <div className="space-y-2">
-                {sessionConnections.length > 0 ? (
-                  sessionConnections.map((connection) => (
-                    <div key={connection.id} className="flex items-center justify-between p-2 border rounded">
-                      <div className="flex items-center space-x-3">
-                        <Avatar className="h-8 w-8">
-                          <AvatarImage src={connection.avatar} alt={connection.name} />
-                          <AvatarFallback>{connection.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <p className="text-sm font-medium">{connection.name}</p>
-                          <p className="text-xs text-muted-foreground">{connection.role} at {connection.company}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Badge className="bg-blue-100 text-blue-800" variant="secondary">
-                          {connection.role}
-                        </Badge>
-                        <Badge className={connection.status === 'confirmed' ? 'bg-green-100 text-green-800' : connection.status === 'pending' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'} variant="secondary">
-                          {connection.status}
-                        </Badge>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <p className="text-sm text-muted-foreground">No participants yet</p>
-                )}
-              </div>
-            </div>
-          </div>
-          
-          <div className="flex space-x-2 pt-4">
-            <Button className="flex-1">
-              <Plus className="mr-2 h-4 w-4" />
-              Join Session
-            </Button>
-            <Button variant="outline">
-              <ExternalLink className="h-4 w-4" />
-            </Button>
+    <Card 
+      className="hover:shadow-md transition-shadow cursor-pointer"
+      onClick={() => onSessionClick(session)}
+    >
+      <CardHeader>
+        <div className="flex items-start justify-between">
+          <div className="space-y-1">
+            <CardTitle className="text-lg">{session.title}</CardTitle>
+            <CardDescription className="line-clamp-2">
+              {session.description}
+            </CardDescription>
           </div>
         </div>
-      </SheetContent>
-    </Sheet>
+        <div className="flex items-center gap-2">
+          <Badge className={getTypeColor(session.type)}>
+            {session.type}
+          </Badge>
+          <Badge className={getStatusColor(session.status)}>
+            {session.status}
+          </Badge>
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="flex items-center space-x-4 text-sm text-muted-foreground">
+          <div className="flex items-center space-x-1">
+            <Calendar className="h-4 w-4" />
+            <span>{session.date}</span>
+          </div>
+          <div className="flex items-center space-x-1">
+            <Clock className="h-4 w-4" />
+            <span>{session.time}</span>
+          </div>
+          <div className="flex items-center space-x-1">
+            <Users className="h-4 w-4" />
+            <span>{session.attendees.length}/{session.maxAttendees}</span>
+          </div>
+        </div>
+        
+        <div className="flex items-center space-x-3">
+          <Avatar className="h-8 w-8">
+            <AvatarImage src={session.mentor.avatar} alt={session.mentor.name} />
+            <AvatarFallback>{session.mentor.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+          </Avatar>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium truncate">{session.mentor.name}</p>
+            <p className="text-xs text-muted-foreground truncate">{session.mentor.company}</p>
+          </div>
+        </div>
+        
+        <div className="flex flex-wrap gap-1">
+          {session.tags.map((tag, index) => (
+            <Badge key={index} variant="secondary" className="text-xs">
+              {tag}
+            </Badge>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
   );
 }
 
@@ -237,9 +130,21 @@ export default function SessionsPage() {
   const [selectedStatus, setSelectedStatus] = useState('all');
   const [selectedType, setSelectedType] = useState('all');
   const [sortBy, setSortBy] = useState('date-asc');
+  const [selectedSession, setSelectedSession] = useState<Session | null>(null);
+  const [isSidePanelOpen, setIsSidePanelOpen] = useState(false);
 
   const mentors = Array.from(new Set(typedSessions.map(session => session.mentor.name)));
   const sessionTypes = Array.from(new Set(typedSessions.map(session => session.type)));
+
+  const handleSessionClick = (session: Session) => {
+    setSelectedSession(session);
+    setIsSidePanelOpen(true);
+  };
+
+  const handleCloseSidePanel = () => {
+    setIsSidePanelOpen(false);
+    setSelectedSession(null);
+  };
 
   // Enhanced sort sessions function
   const sortSessions = (sessions: Session[]) => {
@@ -391,7 +296,8 @@ export default function SessionsPage() {
             {sortedSessions.map((session) => (
               <SessionCard 
                 key={session.id} 
-                session={session} 
+                session={session}
+                onSessionClick={handleSessionClick}
               />
             ))}
           </div>
@@ -402,7 +308,8 @@ export default function SessionsPage() {
             {sortSessions(filteredSessions.filter(s => s.status === 'upcoming')).map((session) => (
               <SessionCard 
                 key={session.id} 
-                session={session} 
+                session={session}
+                onSessionClick={handleSessionClick}
               />
             ))}
           </div>
@@ -413,7 +320,8 @@ export default function SessionsPage() {
             {sortSessions(filteredSessions.filter(s => s.status === 'ongoing')).map((session) => (
               <SessionCard 
                 key={session.id} 
-                session={session} 
+                session={session}
+                onSessionClick={handleSessionClick}
               />
             ))}
           </div>
@@ -424,12 +332,20 @@ export default function SessionsPage() {
             {sortSessions(filteredSessions.filter(s => s.status === 'completed')).map((session) => (
               <SessionCard 
                 key={session.id} 
-                session={session} 
+                session={session}
+                onSessionClick={handleSessionClick}
               />
             ))}
           </div>
         </TabsContent>
       </Tabs>
+
+      {/* Session Side Panel */}
+      <SessionSidePanel
+        session={selectedSession}
+        isOpen={isSidePanelOpen}
+        onClose={handleCloseSidePanel}
+      />
     </div>
   );
 } 

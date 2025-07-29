@@ -91,13 +91,25 @@ export const getMockData = (type: keyof typeof mockData) => {
 
 // Helper functions to resolve relationships using junction tables
 export const getConnectionSessions = (connectionId: string): Array<Session & { role: string; status: string }> => {
+  if (!connectionId) {
+    console.warn('getConnectionSessions: connectionId is required');
+    return [];
+  }
+
   const sessionConnections = mockData.junctions.sessionConnections.filter(
     sc => sc.connectionId === connectionId
   );
   
+  if (sessionConnections.length === 0) {
+    return [];
+  }
+  
   return sessionConnections.map(sc => {
     const session = mockData.sessions.find(s => s.id === sc.sessionId);
-    if (!session) return null;
+    if (!session) {
+      console.warn(`getConnectionSessions: Session with id ${sc.sessionId} not found`);
+      return null;
+    }
     
     return {
       ...session,
@@ -108,13 +120,25 @@ export const getConnectionSessions = (connectionId: string): Array<Session & { r
 };
 
 export const getConnectionMeetings = (connectionId: string): Array<Meeting & { role: string; status: string }> => {
+  if (!connectionId) {
+    console.warn('getConnectionMeetings: connectionId is required');
+    return [];
+  }
+
   const meetingConnections = mockData.junctions.meetingConnections.filter(
     mc => mc.connectionId === connectionId
   );
   
+  if (meetingConnections.length === 0) {
+    return [];
+  }
+  
   return meetingConnections.map(mc => {
     const meeting = mockData.meetings.find(m => m.id === mc.meetingId);
-    if (!meeting) return null;
+    if (!meeting) {
+      console.warn(`getConnectionMeetings: Meeting with id ${mc.meetingId} not found`);
+      return null;
+    }
     
     return {
       ...meeting,
@@ -122,6 +146,40 @@ export const getConnectionMeetings = (connectionId: string): Array<Meeting & { r
       status: mc.status, // This is the meeting connection status
     };
   }).filter(Boolean) as Array<Meeting & { role: string; status: string }>;
+};
+
+// Helper function to get session with attendees based on junction data
+export const getSessionWithAttendees = (sessionId: string): Session | null => {
+  const session = mockData.sessions.find(s => s.id === sessionId);
+  if (!session) return null;
+
+  // Get all connections for this session from junction data
+  const sessionConnections = mockData.junctions.sessionConnections.filter(
+    sc => sc.sessionId === sessionId
+  );
+
+  // Build attendees array from junction data
+  const attendees = sessionConnections.map(sc => {
+    const connection = mockData.connections.find(c => c.id === sc.connectionId);
+    if (!connection) return null;
+
+    return {
+      name: connection.name,
+      avatar: connection.avatar,
+      role: sc.role,
+      company: connection.company,
+    };
+  }).filter(Boolean);
+
+  return {
+    ...session,
+    attendees: attendees as Array<{
+      name: string;
+      avatar: string;
+      role: string;
+      company: string;
+    }>,
+  };
 };
 
 export const getSessionConnections = (sessionId: string): Array<Connection & { role: string; status: string }> => {

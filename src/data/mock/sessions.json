@@ -14,7 +14,20 @@
         "avatar": "/avatars/sarah.jpg",
         "company": "Product Strategy Inc."
       },
-      "attendees": 12,
+      "attendees": [
+        {
+          "name": "Sarah Chen",
+          "avatar": "/avatars/sarah.jpg",
+          "role": "mentor",
+          "company": "Product Strategy Inc."
+        },
+        {
+          "name": "Michael Rodriguez",
+          "avatar": "/avatars/michael.jpg",
+          "role": "attendee",
+          "company": "Venture Capital Partners"
+        }
+      ],
       "maxAttendees": 20,
       "tags": ["Product", "Strategy", "Workshop"]
     },
@@ -32,7 +45,20 @@
         "avatar": "/avatars/michael.jpg",
         "company": "Venture Capital Partners"
       },
-      "attendees": 8,
+      "attendees": [
+        {
+          "name": "Michael Rodriguez",
+          "avatar": "/avatars/michael.jpg",
+          "role": "mentor",
+          "company": "Venture Capital Partners"
+        },
+        {
+          "name": "Sarah Chen",
+          "avatar": "/avatars/sarah.jpg",
+          "role": "attendee",
+          "company": "Product Strategy Inc."
+        }
+      ],
       "maxAttendees": 10,
       "tags": ["Pitch", "Investor", "Practice"]
     },
@@ -50,7 +76,20 @@
         "avatar": "/avatars/emily.jpg",
         "company": "Startup Community Hub"
       },
-      "attendees": 25,
+      "attendees": [
+        {
+          "name": "Emily Johnson",
+          "avatar": "/avatars/emily.jpg",
+          "role": "mentor",
+          "company": "Startup Community Hub"
+        },
+        {
+          "name": "David Kim",
+          "avatar": "/avatars/david.jpg",
+          "role": "attendee",
+          "company": "Tech Solutions LLC"
+        }
+      ],
       "maxAttendees": 50,
       "tags": ["Networking", "Community", "Social"]
     },
@@ -68,7 +107,14 @@
         "avatar": "/avatars/david.jpg",
         "company": "Tech Solutions LLC"
       },
-      "attendees": 1,
+      "attendees": [
+        {
+          "name": "David Kim",
+          "avatar": "/avatars/david.jpg",
+          "role": "mentor",
+          "company": "Tech Solutions LLC"
+        }
+      ],
       "maxAttendees": 1,
       "tags": ["Technical", "Architecture", "Review"]
     }
