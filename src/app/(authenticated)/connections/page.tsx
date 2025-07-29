@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
+import { useAuth } from '@/contexts/auth-context';
 import {
   Search,
   Users,
@@ -21,7 +22,8 @@ import {
   Star,
   Filter,
   Plus,
-  MapPin
+  MapPin,
+  Heart
 } from 'lucide-react';
 
 interface Connection {
@@ -38,6 +40,7 @@ interface Connection {
   bio: string;
   location: string;
   email: string;
+  isFavorite?: boolean;
 }
 
 // Helper functions
@@ -81,7 +84,8 @@ const mockConnections: Connection[] = [
     tags: ['Product Strategy', 'Startup Mentor', 'Tech'],
     bio: 'Experienced product manager with 10+ years in tech startups. Passionate about helping founders build successful products.',
     location: 'San Francisco, CA',
-    email: 'sarah@productstrategy.com'
+    email: 'sarah@productstrategy.com',
+    isFavorite: true
   },
   {
     id: '2',
@@ -96,7 +100,8 @@ const mockConnections: Connection[] = [
     tags: ['Investment', 'Venture Capital', 'Fintech'],
     bio: 'Early-stage investor focused on fintech and SaaS startups. Looking for innovative founders with strong execution.',
     location: 'New York, NY',
-    email: 'michael@vcpartners.com'
+    email: 'michael@vcpartners.com',
+    isFavorite: false
   },
   {
     id: '3',
@@ -111,7 +116,8 @@ const mockConnections: Connection[] = [
     tags: ['Community Building', 'Startup Ecosystem', 'Networking'],
     bio: 'Building communities that connect founders, mentors, and investors. Passionate about startup ecosystem development.',
     location: 'Austin, TX',
-    email: 'emily@communityhub.com'
+    email: 'emily@communityhub.com',
+    isFavorite: true
   },
   {
     id: '4',
@@ -126,180 +132,183 @@ const mockConnections: Connection[] = [
     tags: ['Technical Architecture', 'Scalability', 'Engineering'],
     bio: 'Technical leader with expertise in building scalable systems. Helping startups architect their technology stack.',
     location: 'Seattle, WA',
-    email: 'david@techsolutions.com'
+    email: 'david@techsolutions.com',
+    isFavorite: false
   }
 ];
 
 // Connection Card Component
-function ConnectionCard({ connection, onSelectConnection }: { connection: Connection; onSelectConnection: (connection: Connection) => void }) {
+function ConnectionCard({ 
+  connection, 
+  onToggleFavorite 
+}: { 
+  connection: Connection; 
+  onToggleFavorite: (connectionId: string) => void;
+}) {
   return (
-    <Card className="hover:shadow-md transition-shadow">
-      <CardHeader>
-        <div className="flex items-start justify-between">
-          <div className="flex items-center space-x-3">
-            <Avatar className="h-12 w-12">
+    <Sheet>
+      <SheetTrigger asChild>
+        <Card className="hover:shadow-md transition-shadow cursor-pointer">
+          <CardHeader>
+            <div className="flex items-start justify-between">
+              <div className="flex items-center space-x-3">
+                <Avatar className="h-12 w-12">
+                  <AvatarImage src={connection.avatar} alt={connection.name} />
+                  <AvatarFallback>{connection.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                </Avatar>
+                <div className="space-y-1">
+                  <CardTitle className="text-lg">{connection.name}</CardTitle>
+                  <CardDescription>
+                    {connection.role} at {connection.company}
+                  </CardDescription>
+                </div>
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onToggleFavorite(connection.id);
+                }}
+                className="h-8 w-8 p-0 hover:bg-red-50"
+              >
+                <Heart 
+                  className={`h-4 w-4 ${connection.isFavorite ? 'fill-red-500 text-red-500' : 'text-gray-400'}`} 
+                />
+              </Button>
+            </div>
+ 
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center space-x-2">
+              <Building2 className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm text-muted-foreground">{connection.industry}</span>
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <MapPin className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm text-muted-foreground">{connection.location}</span>
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <Calendar className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm text-muted-foreground">Last contact: {connection.lastContact}</span>
+            </div>
+
+            <div className="flex flex-wrap gap-1">
+              {connection.tags.slice(0, 3).map((tag) => (
+                <Badge key={tag} variant="secondary" className="text-xs">
+                  {tag}
+                </Badge>
+              ))}
+              {connection.tags.length > 3 && (
+                <Badge variant="secondary" className="text-xs">
+                  +{connection.tags.length - 3} more
+                </Badge>
+              )}
+            </div>
+
+            
+          </CardContent>
+        </Card>
+      </SheetTrigger>
+      <SheetContent className="overflow-y-auto">
+        <SheetHeader>
+          <SheetTitle>Connection Details</SheetTitle>
+        </SheetHeader>
+        <div className="px-6 space-y-6 pt-6 pb-6">
+          <div className="flex items-center space-x-2">
+            <Avatar className="h-16 w-16">
               <AvatarImage src={connection.avatar} alt={connection.name} />
               <AvatarFallback>{connection.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
             </Avatar>
             <div className="space-y-1">
-              <CardTitle className="text-lg">{connection.name}</CardTitle>
-              <CardDescription>
-                {connection.role} at {connection.company}
-              </CardDescription>
+              <h3 className="text-lg font-medium">{connection.name}</h3>
+              <p className="text-sm text-muted-foreground">{connection.role}</p>
+              <p className="text-sm text-muted-foreground">{connection.company}</p>
+ 
+              <p className="text-sm text-muted-foreground">{connection.location}</p>
             </div>
           </div>
-        </div>
-        <div className="flex items-center gap-2">
-          <Badge className={getStatusColor(connection.status)}>
-            {connection.status}
-          </Badge>
-          <span className="text-sm text-muted-foreground">
-            {connection.mutualConnections} mutual connections
-          </span>
-        </div>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="flex items-center space-x-2">
-          <Building2 className="h-4 w-4 text-muted-foreground" />
-          <span className="text-sm text-muted-foreground">{connection.industry}</span>
-        </div>
-
-        <div className="flex items-center space-x-2">
-          <MapPin className="h-4 w-4 text-muted-foreground" />
-          <span className="text-sm text-muted-foreground">{connection.location}</span>
-        </div>
-
-        <div className="flex items-center space-x-2">
-          <Calendar className="h-4 w-4 text-muted-foreground" />
-          <span className="text-sm text-muted-foreground">Last contact: {connection.lastContact}</span>
-        </div>
-
-        <div className="flex flex-wrap gap-1">
-          {connection.tags.slice(0, 3).map((tag) => (
-            <Badge key={tag} variant="secondary" className="text-xs">
-              {tag}
-            </Badge>
-          ))}
-          {connection.tags.length > 3 && (
-            <Badge variant="secondary" className="text-xs">
-              +{connection.tags.length - 3} more
-            </Badge>
-          )}
-        </div>
-
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            {getStatusIcon(connection.status)}
-            <span className="text-sm text-muted-foreground">
-              {connection.status === 'connected' ? 'Connected' : 
-               connection.status === 'pending' ? 'Connection pending' : 'Request sent'}
-            </span>
+          
+          <Separator />
+          
+          <div className="space-y-2">
+            <h4 className="font-medium">About</h4>
+            <p className="text-sm text-muted-foreground">{connection.bio}</p>
           </div>
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => onSelectConnection(connection)}
-              >
-                View Profile
-              </Button>
-            </SheetTrigger>
-            <SheetContent>
-              <SheetHeader>
-                <SheetTitle>{connection.name}</SheetTitle>
-                <SheetDescription>{connection.role} at {connection.company}</SheetDescription>
-              </SheetHeader>
-              <div className="px-6 space-y-6">
-                <div className="flex items-center space-x-2">
-                  <Avatar className="h-16 w-16">
-                    <AvatarImage src={connection.avatar} alt={connection.name} />
-                    <AvatarFallback>{connection.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
-                  </Avatar>
-                  <div className="space-y-1">
-                    <h3 className="text-lg font-medium">{connection.name}</h3>
-                    <p className="text-sm text-muted-foreground">{connection.role}</p>
-                    <p className="text-sm text-muted-foreground">{connection.company}</p>
-                    <div className="flex items-center space-x-2">
-                      <Badge className={getStatusColor(connection.status)}>
-                        {connection.status}
-                      </Badge>
-                      <span className="text-sm text-muted-foreground">
-                        {connection.mutualConnections} mutual connections
-                      </span>
-                    </div>
-                    <p className="text-sm text-muted-foreground">{connection.location}</p>
-                  </div>
-                </div>
-                
-                <Separator />
-                
-                <div className="space-y-2">
-                  <h4 className="font-medium">About</h4>
-                  <p className="text-sm text-muted-foreground">{connection.bio}</p>
-                </div>
 
-                <Separator />
+          <Separator />
 
-                <div className="space-y-2">
-                  <h4 className="font-medium">Contact Information</h4>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex items-center space-x-2">
-                      <Mail className="h-4 w-4 text-muted-foreground" />
-                      <span>{connection.email}</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Building2 className="h-4 w-4 text-muted-foreground" />
-                      <span>{connection.company}</span>
-                    </div>
-                  </div>
-                </div>
-
-                <Separator />
-
-                <div className="space-y-2">
-                  <h4 className="font-medium">Tags</h4>
-                  <div className="flex flex-wrap gap-1">
-                    {connection.tags.map((tag) => (
-                      <Badge key={tag} variant="secondary" className="text-xs">
-                        {tag}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="flex space-x-2 pt-4">
-                  <Button className="flex-1">
-                    <MessageSquare className="mr-2 h-4 w-4" />
-                    Send Message
-                  </Button>
-                  <Button variant="outline">
-                    <Calendar className="mr-2 h-4 w-4" />
-                    Schedule Meeting
-                  </Button>
-                </div>
+          <div className="space-y-2">
+            <h4 className="font-medium">Contact Information</h4>
+            <div className="space-y-2 text-sm">
+              <div className="flex items-center space-x-2">
+                <Mail className="h-4 w-4 text-muted-foreground" />
+                <span>{connection.email}</span>
               </div>
-            </SheetContent>
-          </Sheet>
+              <div className="flex items-center space-x-2">
+                <Building2 className="h-4 w-4 text-muted-foreground" />
+                <span>{connection.company}</span>
+              </div>
+            </div>
+          </div>
+
+          <Separator />
+
+          <div className="space-y-2">
+            <h4 className="font-medium">Tags</h4>
+            <div className="flex flex-wrap gap-1">
+              {connection.tags.map((tag) => (
+                <Badge key={tag} variant="secondary" className="text-xs">
+                  {tag}
+                </Badge>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex space-x-2 pt-4">
+            <Button className="flex-1">
+              <MessageSquare className="mr-2 h-4 w-4" />
+              Send Message
+            </Button>
+            <Button variant="outline">
+              <Calendar className="mr-2 h-4 w-4" />
+              Schedule Meeting
+            </Button>
+          </div>
         </div>
-      </CardContent>
-    </Card>
+      </SheetContent>
+    </Sheet>
   );
 }
 
 export default function ConnectionsPage() {
+  const { user } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedIndustry, setSelectedIndustry] = useState('all');
-  const [selectedConnection, setSelectedConnection] = useState<Connection | null>(null);
+  const [connections, setConnections] = useState<Connection[]>(mockConnections);
+  const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
 
-  const industries = Array.from(new Set(mockConnections.map(connection => connection.industry)));
+  const industries = Array.from(new Set(connections.map(connection => connection.industry)));
 
-  const filteredConnections = mockConnections.filter(connection => {
+  const toggleFavorite = (connectionId: string) => {
+    setConnections(prevConnections =>
+      prevConnections.map(connection =>
+        connection.id === connectionId
+          ? { ...connection, isFavorite: !connection.isFavorite }
+          : connection
+      )
+    );
+  };
+
+  const filteredConnections = connections.filter(connection => {
     const matchesSearch = connection.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          connection.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          connection.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
     const matchesIndustry = selectedIndustry === 'all' || connection.industry === selectedIndustry;
-    return matchesSearch && matchesIndustry;
+    const matchesFavorites = !showFavoritesOnly || connection.isFavorite;
+    return matchesSearch && matchesIndustry && matchesFavorites;
   });
 
   return (
@@ -312,42 +321,31 @@ export default function ConnectionsPage() {
             Manage your professional network and discover new connections
           </p>
         </div>
-        <Button>
-          <Plus className="mr-2 h-4 w-4" />
-          Add Connection
-        </Button>
+        {user?.role === 'admin' && (
+          <Button>
+            <Plus className="mr-2 h-4 w-4" />
+            Add Connection
+          </Button>
+        )}
       </div>
 
       {/* Stats */}
-      <div className="grid gap-4 md:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-2">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Connections</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              {showFavoritesOnly ? 'Total Favorites' : 'Total Connections'}
+            </CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">156</div>
-            <p className="text-xs text-muted-foreground">+12 from last month</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pending Requests</CardTitle>
-            <UserPlus className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">8</div>
-            <p className="text-xs text-muted-foreground">Awaiting response</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Mutual Connections</CardTitle>
-            <Star className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">89</div>
-            <p className="text-xs text-muted-foreground">Average per connection</p>
+            <div className="text-2xl font-bold">
+              {connections.filter(connection => {
+                const matchesFavorites = !showFavoritesOnly || connection.isFavorite;
+                const matchesIndustry = selectedIndustry === 'all' || connection.industry === selectedIndustry;
+                return matchesFavorites && matchesIndustry;
+              }).length}
+            </div>
           </CardContent>
         </Card>
         <Card>
@@ -356,7 +354,7 @@ export default function ConnectionsPage() {
             <Building2 className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">12</div>
+            <div className="text-2xl font-bold">{industries.length}</div>
             <p className="text-xs text-muted-foreground">Different sectors</p>
           </CardContent>
         </Card>
@@ -386,6 +384,14 @@ export default function ConnectionsPage() {
             ))}
           </SelectContent>
         </Select>
+        <Button
+          variant={showFavoritesOnly ? "default" : "outline"}
+          onClick={() => setShowFavoritesOnly(!showFavoritesOnly)}
+          className="flex items-center gap-2"
+        >
+          <Heart className={`h-4 w-4 ${showFavoritesOnly ? 'fill-white' : 'fill-red-500 text-red-500'}`} />
+          {showFavoritesOnly ? 'Show All' : 'Favorites Only'}
+        </Button>
       </div>
 
       {/* Connections Grid */}
@@ -403,7 +409,7 @@ export default function ConnectionsPage() {
               <ConnectionCard 
                 key={connection.id} 
                 connection={connection} 
-                onSelectConnection={setSelectedConnection}
+                onToggleFavorite={toggleFavorite}
               />
             ))}
           </div>
@@ -415,7 +421,7 @@ export default function ConnectionsPage() {
               <ConnectionCard 
                 key={connection.id} 
                 connection={connection} 
-                onSelectConnection={setSelectedConnection}
+                onToggleFavorite={toggleFavorite}
               />
             ))}
           </div>
@@ -427,7 +433,7 @@ export default function ConnectionsPage() {
               <ConnectionCard 
                 key={connection.id} 
                 connection={connection} 
-                onSelectConnection={setSelectedConnection}
+                onToggleFavorite={toggleFavorite}
               />
             ))}
           </div>
@@ -439,7 +445,7 @@ export default function ConnectionsPage() {
               <ConnectionCard 
                 key={connection.id} 
                 connection={connection} 
-                onSelectConnection={setSelectedConnection}
+                onToggleFavorite={toggleFavorite}
               />
             ))}
           </div>

@@ -145,143 +145,135 @@ const mockSessions: Session[] = [
 ];
 
 // Session Card Component
-function SessionCard({ session, onSelectSession }: { session: Session; onSelectSession: (session: Session) => void }) {
+function SessionCard({ session }: { session: Session }) {
   return (
-    <Card className="hover:shadow-md transition-shadow">
-      <CardHeader>
-        <div className="flex items-start justify-between">
-          <div className="space-y-1">
-            <CardTitle className="text-lg">{session.title}</CardTitle>
-            <CardDescription className="line-clamp-2">
-              {session.description}
-            </CardDescription>
-          </div>
-        </div>
-        <div className="flex items-center gap-2">
-          <Badge className={getTypeColor(session.type)}>
-            {session.type}
-          </Badge>
-          <Badge className={getStatusColor(session.status)}>
-            {session.status}
-          </Badge>
-        </div>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-          <div className="flex items-center space-x-1">
-            <Calendar className="h-4 w-4" />
-            <span>{session.date}</span>
-          </div>
-          <div className="flex items-center space-x-1">
-            <Clock className="h-4 w-4" />
-            <span>{session.time}</span>
-          </div>
-        </div>
-
-        <div className="flex items-center space-x-2">
-          <Avatar className="h-8 w-8">
-            <AvatarImage src={session.mentor.avatar} alt={session.mentor.name} />
-            <AvatarFallback>{session.mentor.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
-          </Avatar>
-          <div className="flex-1">
-            <p className="text-sm font-medium">{session.mentor.name}</p>
-            <p className="text-xs text-muted-foreground">{session.mentor.company}</p>
-          </div>
-        </div>
-
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-1 text-sm text-muted-foreground">
-            <Users className="h-4 w-4" />
-            <span>{session.attendees}/{session.maxAttendees}</span>
-          </div>
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => onSelectSession(session)}
-              >
-                View Details
-              </Button>
-            </SheetTrigger>
-            <SheetContent>
-              <SheetHeader>
-                <SheetTitle>{session.title}</SheetTitle>
-                <SheetDescription>{session.description}</SheetDescription>
-              </SheetHeader>
-              <div className="px-6 space-y-6">
-                <div className="flex items-center space-x-2">
-                  <Badge className={getTypeColor(session.type)}>
-                    {session.type}
-                  </Badge>
-                  <Badge className={getStatusColor(session.status)}>
-                    {session.status}
-                  </Badge>
-                </div>
-                
-                <Separator />
-                
-                <div className="space-y-2">
-                  <h4 className="font-medium">Session Details</h4>
-                  <div className="grid grid-cols-2 gap-2 text-sm">
-                    <div>Date: {session.date}</div>
-                    <div>Time: {session.time}</div>
-                    <div>Duration: {session.duration}</div>
-                    <div>Attendees: {session.attendees}/{session.maxAttendees}</div>
-                  </div>
-                </div>
-
-                <Separator />
-
-                <div className="space-y-2">
-                  <h4 className="font-medium">Mentor</h4>
-                  <div className="flex items-center space-x-2">
-                    <Avatar>
-                      <AvatarImage src={session.mentor.avatar} alt={session.mentor.name} />
-                      <AvatarFallback>{session.mentor.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <p className="font-medium">{session.mentor.name}</p>
-                      <p className="text-sm text-muted-foreground">{session.mentor.company}</p>
-                    </div>
-                  </div>
-                </div>
-
-                <Separator />
-
-                <div className="space-y-2">
-                  <h4 className="font-medium">Tags</h4>
-                  <div className="flex flex-wrap gap-1">
-                    {session.tags.map((tag) => (
-                      <Badge key={tag} variant="secondary" className="text-xs">
-                        {tag}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="flex space-x-2 pt-4">
-                  <Button className="flex-1">
-                    <Play className="mr-2 h-4 w-4" />
-                    Join Session
-                  </Button>
-                  <Button variant="outline">
-                    <ExternalLink className="h-4 w-4" />
-                  </Button>
-                </div>
+    <Sheet>
+      <SheetTrigger asChild>
+        <Card className="hover:shadow-md transition-shadow cursor-pointer">
+          <CardHeader>
+            <div className="flex items-start justify-between">
+              <div className="space-y-1">
+                <CardTitle className="text-lg">{session.title}</CardTitle>
+                <CardDescription className="line-clamp-2">
+                  {session.description}
+                </CardDescription>
               </div>
-            </SheetContent>
-          </Sheet>
+            </div>
+            <div className="flex items-center gap-2">
+              <Badge className={getTypeColor(session.type)}>
+                {session.type}
+              </Badge>
+              <Badge className={getStatusColor(session.status)}>
+                {session.status}
+              </Badge>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center space-x-4 text-sm text-muted-foreground">
+              <div className="flex items-center space-x-1">
+                <Calendar className="h-4 w-4" />
+                <span>{session.date}</span>
+              </div>
+              <div className="flex items-center space-x-1">
+                <Clock className="h-4 w-4" />
+                <span>{session.time}</span>
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <Avatar className="h-8 w-8">
+                <AvatarImage src={session.mentor.avatar} alt={session.mentor.name} />
+                <AvatarFallback>{session.mentor.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+              </Avatar>
+              <div className="flex-1">
+                <p className="text-sm font-medium">{session.mentor.name}</p>
+                <p className="text-xs text-muted-foreground">{session.mentor.company}</p>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end">
+              <div className="flex items-center space-x-1 text-sm text-muted-foreground">
+                <Users className="h-4 w-4" />
+                <span>{session.attendees}/{session.maxAttendees}</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </SheetTrigger>
+      <SheetContent className="overflow-y-auto">
+        <SheetHeader>
+          <SheetTitle>{session.title}</SheetTitle>
+          <SheetDescription>{session.description}</SheetDescription>
+        </SheetHeader>
+        <div className="px-6 space-y-6 pb-6">
+          <div className="flex items-center space-x-2">
+            <Badge className={getTypeColor(session.type)}>
+              {session.type}
+            </Badge>
+            <Badge className={getStatusColor(session.status)}>
+              {session.status}
+            </Badge>
+          </div>
+          
+          <Separator />
+          
+          <div className="space-y-2">
+            <h4 className="font-medium">Session Details</h4>
+            <div className="grid grid-cols-2 gap-2 text-sm">
+              <div>Date: {session.date}</div>
+              <div>Time: {session.time}</div>
+              <div>Duration: {session.duration}</div>
+              <div>Attendees: {session.attendees}/{session.maxAttendees}</div>
+            </div>
+          </div>
+
+          <Separator />
+
+          <div className="space-y-2">
+            <h4 className="font-medium">Mentor</h4>
+            <div className="flex items-center space-x-2">
+              <Avatar>
+                <AvatarImage src={session.mentor.avatar} alt={session.mentor.name} />
+                <AvatarFallback>{session.mentor.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+              </Avatar>
+              <div>
+                <p className="font-medium">{session.mentor.name}</p>
+                <p className="text-sm text-muted-foreground">{session.mentor.company}</p>
+              </div>
+            </div>
+          </div>
+
+          <Separator />
+
+          <div className="space-y-2">
+            <h4 className="font-medium">Tags</h4>
+            <div className="flex flex-wrap gap-1">
+              {session.tags.map((tag) => (
+                <Badge key={tag} variant="secondary" className="text-xs">
+                  {tag}
+                </Badge>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex space-x-2 pt-4">
+            <Button className="flex-1">
+              <Play className="mr-2 h-4 w-4" />
+              Join Session
+            </Button>
+            <Button variant="outline">
+              <ExternalLink className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
-      </CardContent>
-    </Card>
+      </SheetContent>
+    </Sheet>
   );
 }
 
 export default function SessionsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMentor, setSelectedMentor] = useState('all');
-  const [selectedSession, setSelectedSession] = useState<Session | null>(null);
 
   const mentors = Array.from(new Set(mockSessions.map(session => session.mentor.name)));
 
@@ -344,7 +336,6 @@ export default function SessionsPage() {
               <SessionCard 
                 key={session.id} 
                 session={session} 
-                onSelectSession={setSelectedSession}
               />
             ))}
           </div>
@@ -356,7 +347,6 @@ export default function SessionsPage() {
               <SessionCard 
                 key={session.id} 
                 session={session} 
-                onSelectSession={setSelectedSession}
               />
             ))}
           </div>
@@ -368,7 +358,6 @@ export default function SessionsPage() {
               <SessionCard 
                 key={session.id} 
                 session={session} 
-                onSelectSession={setSelectedSession}
               />
             ))}
           </div>
@@ -380,7 +369,6 @@ export default function SessionsPage() {
               <SessionCard 
                 key={session.id} 
                 session={session} 
-                onSelectSession={setSelectedSession}
               />
             ))}
           </div>
