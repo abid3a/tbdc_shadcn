@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
+import { CardCarousel } from '@/components/ui/card-carousel';
 import {
   Users,
   Calendar,
@@ -145,6 +146,23 @@ export default function DashboardPage() {
       <div className="space-y-2">
         <h1 className="text-3xl font-bold tracking-tight">{content.title}</h1>
         <p className="text-muted-foreground">{content.description}</p>
+      </div>
+
+      {/* Banner Carousel */}
+      <div className="w-full">
+        <CardCarousel
+          images={[
+            { src: '/assets/banners/1.png', alt: 'Banner 1' },
+            { src: '/assets/banners/2.png', alt: 'Banner 2' },
+            { src: '/assets/banners/3.png', alt: 'Banner 3' },
+            { src: '/assets/banners/4.png', alt: 'Banner 4' },
+            { src: '/assets/banners/5.png', alt: 'Banner 5' },
+          ]}
+          autoplayDelay={3000}
+          showPagination={true}
+          showNavigation={true}
+          showHeader={false}
+        />
       </div>
 
       {/* Stats Grid */}
