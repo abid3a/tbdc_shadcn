@@ -386,6 +386,22 @@ export default function MeetingsPage() {
 
   const meetingTypes = Array.from(new Set(mockMeetings.map(meeting => meeting.type)));
 
+  // Sort meetings by date and status
+  const sortMeetings = (meetings: Meeting[]) => {
+    return meetings.sort((a, b) => {
+      // First sort by status priority: scheduled > ongoing > completed > cancelled
+      const statusPriority = { scheduled: 0, ongoing: 1, completed: 2, cancelled: 3 };
+      const statusDiff = statusPriority[a.status as keyof typeof statusPriority] - statusPriority[b.status as keyof typeof statusPriority];
+      
+      if (statusDiff !== 0) return statusDiff;
+      
+      // Then sort by date (earliest first)
+      const dateA = new Date(a.date + ' ' + a.time);
+      const dateB = new Date(b.date + ' ' + b.time);
+      return dateA.getTime() - dateB.getTime();
+    });
+  };
+
   const filteredMeetings = mockMeetings.filter(meeting => {
     const matchesSearch = meeting.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          meeting.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -393,6 +409,8 @@ export default function MeetingsPage() {
     const matchesType = selectedType === 'all' || meeting.type === selectedType;
     return matchesSearch && matchesType;
   });
+
+  const sortedMeetings = sortMeetings(filteredMeetings);
 
   return (
     <div className="p-6 space-y-6">
@@ -449,7 +467,7 @@ export default function MeetingsPage() {
 
         <TabsContent value="all" className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {filteredMeetings.map((meeting) => (
+            {sortedMeetings.map((meeting) => (
               <MeetingCard 
                 key={meeting.id} 
                 meeting={meeting} 
@@ -460,7 +478,7 @@ export default function MeetingsPage() {
 
         <TabsContent value="scheduled" className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {filteredMeetings.filter(m => m.status === 'scheduled').map((meeting) => (
+            {sortMeetings(filteredMeetings.filter(m => m.status === 'scheduled')).map((meeting) => (
               <MeetingCard 
                 key={meeting.id} 
                 meeting={meeting} 
@@ -471,7 +489,7 @@ export default function MeetingsPage() {
 
         <TabsContent value="ongoing" className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {filteredMeetings.filter(m => m.status === 'ongoing').map((meeting) => (
+            {sortMeetings(filteredMeetings.filter(m => m.status === 'ongoing')).map((meeting) => (
               <MeetingCard 
                 key={meeting.id} 
                 meeting={meeting} 
@@ -482,7 +500,7 @@ export default function MeetingsPage() {
 
         <TabsContent value="completed" className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {filteredMeetings.filter(m => m.status === 'completed').map((meeting) => (
+            {sortMeetings(filteredMeetings.filter(m => m.status === 'completed')).map((meeting) => (
               <MeetingCard 
                 key={meeting.id} 
                 meeting={meeting} 

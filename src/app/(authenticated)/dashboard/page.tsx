@@ -148,21 +148,77 @@ export default function DashboardPage() {
         <p className="text-muted-foreground">{content.description}</p>
       </div>
 
-      {/* Banner Carousel */}
-      <div className="w-full">
-        <CardCarousel
-          images={[
-            { src: '/assets/banners/1.png', alt: 'Banner 1' },
-            { src: '/assets/banners/2.png', alt: 'Banner 2' },
-            { src: '/assets/banners/3.png', alt: 'Banner 3' },
-            { src: '/assets/banners/4.png', alt: 'Banner 4' },
-            { src: '/assets/banners/5.png', alt: 'Banner 5' },
-          ]}
-          autoplayDelay={3000}
-          showPagination={true}
-          showNavigation={true}
-          showHeader={false}
-        />
+      {/* Recent Activity and Banner Carousel Row */}
+      <div className="grid gap-6 md:grid-cols-3">
+        {/* Left Column: Recent Activity + Quick Actions */}
+        <div className="md:col-span-1 space-y-6">
+          {/* Recent Activity */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Recent Activity</CardTitle>
+              <CardDescription>Your latest interactions and updates</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {content.recentActivity.map((activity, index) => (
+                <div key={index} className="flex items-center space-x-4">
+                  {getStatusIcon(activity.status)}
+                  <div className="flex-1 space-y-1">
+                    <p className="text-sm font-medium leading-none">{activity.title}</p>
+                    <p className="text-xs text-muted-foreground">{activity.time}</p>
+                  </div>
+                  <Badge variant="secondary" className="text-xs">
+                    {activity.type}
+                  </Badge>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+
+          {/* Quick Actions */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Quick Actions</CardTitle>
+              <CardDescription>Common tasks and shortcuts</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-wrap gap-2">
+                <Button variant="outline" size="sm">
+                  <Calendar className="mr-2 h-4 w-4" />
+                  Schedule Meeting
+                </Button>
+                <Button variant="outline" size="sm">
+                  <MessageSquare className="mr-2 h-4 w-4" />
+                  Start Session
+                </Button>
+                <Button variant="outline" size="sm">
+                  <Users className="mr-2 h-4 w-4" />
+                  Add Connection
+                </Button>
+                <Button variant="outline" size="sm">
+                  <BarChart3 className="mr-2 h-4 w-4" />
+                  View Reports
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Banner Carousel */}
+        <div className="md:col-span-2">
+          <CardCarousel
+            images={[
+              { src: '/assets/banners/1.png', alt: 'Banner 1' },
+              { src: '/assets/banners/2.png', alt: 'Banner 2' },
+              { src: '/assets/banners/3.png', alt: 'Banner 3' },
+              { src: '/assets/banners/4.png', alt: 'Banner 4' },
+              { src: '/assets/banners/5.png', alt: 'Banner 5' },
+            ]}
+            autoplayDelay={3000}
+            showPagination={true}
+            showNavigation={true}
+            showHeader={false}
+          />
+        </div>
       </div>
 
       {/* Stats Grid */}
@@ -183,71 +239,19 @@ export default function DashboardPage() {
         })}
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2">
-        {/* Recent Activity */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent Activity</CardTitle>
-            <CardDescription>Your latest interactions and updates</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {content.recentActivity.map((activity, index) => (
-              <div key={index} className="flex items-center space-x-4">
-                {getStatusIcon(activity.status)}
-                <div className="flex-1 space-y-1">
-                  <p className="text-sm font-medium leading-none">{activity.title}</p>
-                  <p className="text-xs text-muted-foreground">{activity.time}</p>
-                </div>
-                <Badge variant="secondary" className="text-xs">
-                  {activity.type}
-                </Badge>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-
-        {/* Announcements */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Announcements</CardTitle>
-            <CardDescription>Important updates and notifications</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {content.announcements.map((announcement, index) => (
-              <Alert key={index}>
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>{announcement}</AlertDescription>
-              </Alert>
-            ))}
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Quick Actions */}
+      {/* Announcements */}
       <Card>
         <CardHeader>
-          <CardTitle>Quick Actions</CardTitle>
-          <CardDescription>Common tasks and shortcuts</CardDescription>
+          <CardTitle>Announcements</CardTitle>
+          <CardDescription>Important updates and notifications</CardDescription>
         </CardHeader>
-        <CardContent>
-          <div className="flex flex-wrap gap-2">
-            <Button variant="outline" size="sm">
-              <Calendar className="mr-2 h-4 w-4" />
-              Schedule Meeting
-            </Button>
-            <Button variant="outline" size="sm">
-              <MessageSquare className="mr-2 h-4 w-4" />
-              Start Session
-            </Button>
-            <Button variant="outline" size="sm">
-              <Users className="mr-2 h-4 w-4" />
-              Add Connection
-            </Button>
-            <Button variant="outline" size="sm">
-              <BarChart3 className="mr-2 h-4 w-4" />
-              View Reports
-            </Button>
-          </div>
+        <CardContent className="space-y-4">
+          {content.announcements.map((announcement, index) => (
+            <Alert key={index}>
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>{announcement}</AlertDescription>
+            </Alert>
+          ))}
         </CardContent>
       </Card>
     </div>

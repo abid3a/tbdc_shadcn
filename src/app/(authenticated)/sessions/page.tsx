@@ -277,6 +277,22 @@ export default function SessionsPage() {
 
   const mentors = Array.from(new Set(mockSessions.map(session => session.mentor.name)));
 
+  // Sort sessions by date and status
+  const sortSessions = (sessions: Session[]) => {
+    return sessions.sort((a, b) => {
+      // First sort by status priority: upcoming > ongoing > completed
+      const statusPriority = { upcoming: 0, ongoing: 1, completed: 2 };
+      const statusDiff = statusPriority[a.status as keyof typeof statusPriority] - statusPriority[b.status as keyof typeof statusPriority];
+      
+      if (statusDiff !== 0) return statusDiff;
+      
+      // Then sort by date (earliest first)
+      const dateA = new Date(a.date + ' ' + a.time);
+      const dateB = new Date(b.date + ' ' + b.time);
+      return dateA.getTime() - dateB.getTime();
+    });
+  };
+
   const filteredSessions = mockSessions.filter(session => {
     const matchesSearch = session.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          session.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -284,6 +300,8 @@ export default function SessionsPage() {
     const matchesMentor = selectedMentor === 'all' || session.mentor.name === selectedMentor;
     return matchesSearch && matchesMentor;
   });
+
+  const sortedSessions = sortSessions(filteredSessions);
 
   return (
     <div className="p-6 space-y-6">
@@ -332,7 +350,7 @@ export default function SessionsPage() {
 
         <TabsContent value="all" className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {filteredSessions.map((session) => (
+            {sortedSessions.map((session) => (
               <SessionCard 
                 key={session.id} 
                 session={session} 
@@ -343,7 +361,7 @@ export default function SessionsPage() {
 
         <TabsContent value="upcoming" className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {filteredSessions.filter(s => s.status === 'upcoming').map((session) => (
+            {sortSessions(filteredSessions.filter(s => s.status === 'upcoming')).map((session) => (
               <SessionCard 
                 key={session.id} 
                 session={session} 
@@ -354,7 +372,7 @@ export default function SessionsPage() {
 
         <TabsContent value="ongoing" className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {filteredSessions.filter(s => s.status === 'ongoing').map((session) => (
+            {sortSessions(filteredSessions.filter(s => s.status === 'ongoing')).map((session) => (
               <SessionCard 
                 key={session.id} 
                 session={session} 
@@ -365,7 +383,7 @@ export default function SessionsPage() {
 
         <TabsContent value="completed" className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {filteredSessions.filter(s => s.status === 'completed').map((session) => (
+            {sortSessions(filteredSessions.filter(s => s.status === 'completed')).map((session) => (
               <SessionCard 
                 key={session.id} 
                 session={session} 
