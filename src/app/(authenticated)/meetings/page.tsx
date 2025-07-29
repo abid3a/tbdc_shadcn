@@ -7,7 +7,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -15,6 +14,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useAuth } from '@/contexts/auth-context';
 import { useMeetings } from '@/hooks/use-data';
 import { getMeetingConnections } from '@/data';
+import { MeetingSidePanel } from '@/components/ui/meeting-side-panel';
 import {
   Calendar,
   Clock,
@@ -81,171 +81,59 @@ const getFormatIcon = (format: string) => {
 };
 
 // Meeting Card Component
-function MeetingCard({ meeting }: { meeting: Meeting }) {
-  const meetingConnections = getMeetingConnections(meeting.id);
-
+function MeetingCard({ meeting, onMeetingClick }: { meeting: Meeting; onMeetingClick: (meeting: Meeting) => void }) {
   return (
-    <Sheet>
-      <SheetTrigger asChild>
-        <Card className="hover:shadow-md transition-shadow cursor-pointer">
-          <CardHeader>
-            <div className="flex items-start justify-between">
-              <div className="space-y-1">
-                <CardTitle className="text-lg">{meeting.title}</CardTitle>
-                <CardDescription className="line-clamp-2">
-                  {meeting.description}
-                </CardDescription>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <Badge className={getTypeColor(meeting.type)}>
-                {meeting.type}
-              </Badge>
-              <Badge className={getStatusColor(meeting.status)}>
-                {meeting.status}
-              </Badge>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-              <div className="flex items-center space-x-1">
-                <Calendar className="h-4 w-4" />
-                <span>{meeting.date}</span>
-              </div>
-              <div className="flex items-center space-x-1">
-                <Clock className="h-4 w-4" />
-                <span>{meeting.time}</span>
-              </div>
-              <div className="flex items-center space-x-1">
-                {getFormatIcon(meeting.format)}
-                <span>{meeting.format}</span>
-              </div>
-              <div className="flex items-center space-x-1">
-                <Users className="h-4 w-4" />
-                <span>{meeting.attendees.length}/{meeting.maxAttendees}</span>
-              </div>
-            </div>
-            
-            <div className="flex flex-wrap gap-1">
-              {meeting.tags.map((tag, index) => (
-                <Badge key={index} variant="secondary" className="text-xs">
-                  {tag}
-                </Badge>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      </SheetTrigger>
-      <SheetContent className="w-4/5 sm:max-w-md lg:max-w-lg xl:max-w-xl">
-        <SheetHeader>
-          <SheetTitle>{meeting.title}</SheetTitle>
-          <SheetDescription>{meeting.description}</SheetDescription>
-        </SheetHeader>
-        <div className="px-6 space-y-6 pt-6">
-          <div className="flex items-center space-x-2">
-            <Badge className={getTypeColor(meeting.type)}>
-              {meeting.type}
-            </Badge>
-            <Badge className={getStatusColor(meeting.status)}>
-              {meeting.status}
-            </Badge>
-          </div>
-          
-          <Separator />
-          
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              <div>
-                <span className="text-muted-foreground">Date:</span>
-                <p className="font-medium">{meeting.date}</p>
-              </div>
-              <div>
-                <span className="text-muted-foreground">Time:</span>
-                <p className="font-medium">{meeting.time}</p>
-              </div>
-              <div>
-                <span className="text-muted-foreground">Duration:</span>
-                <p className="font-medium">{meeting.duration}</p>
-              </div>
-              <div>
-                <span className="text-muted-foreground">Format:</span>
-                <p className="font-medium">{meeting.format}</p>
-              </div>
-              {meeting.location && (
-                <div>
-                  <span className="text-muted-foreground">Location:</span>
-                  <p className="font-medium">{meeting.location}</p>
-                </div>
-              )}
-              {meeting.meetingUrl && (
-                <div>
-                  <span className="text-muted-foreground">Meeting URL:</span>
-                  <p className="font-medium">
-                    <a href={meeting.meetingUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-                      Join Meeting
-                    </a>
-                  </p>
-                </div>
-              )}
-            </div>
-            
-            <div>
-              <h4 className="font-medium mb-2">Tags</h4>
-              <div className="flex flex-wrap gap-1">
-                {meeting.tags.map((tag, index) => (
-                  <Badge key={index} variant="secondary">
-                    {tag}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-            
-            <div>
-              <h4 className="font-medium mb-2">Attendees ({meetingConnections.length})</h4>
-              <div className="space-y-2">
-                {meetingConnections.length > 0 ? (
-                  meetingConnections.map((connection) => (
-                    <div key={connection.id} className="flex items-center justify-between p-2 border rounded">
-                      <div className="flex items-center space-x-3">
-                        <Avatar className="h-8 w-8">
-                          <AvatarImage src={connection.avatar} alt={connection.name} />
-                          <AvatarFallback>{connection.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <p className="text-sm font-medium">{connection.name}</p>
-                          <p className="text-xs text-muted-foreground">{connection.role} at {connection.company}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Badge className="bg-blue-100 text-blue-800" variant="secondary">
-                          {connection.role}
-                        </Badge>
-                        <Badge className={connection.status === 'connected' ? 'bg-green-100 text-green-800' : connection.status === 'pending' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'} variant="secondary">
-                          {connection.status}
-                        </Badge>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <p className="text-sm text-muted-foreground">No attendees yet</p>
-                )}
-              </div>
-            </div>
-          </div>
-          
-          <div className="flex space-x-2 pt-4">
-            <Button className="flex-1">
-              <ExternalLink className="mr-2 h-4 w-4" />
-              Join Meeting
-            </Button>
-            <Button variant="outline">
-              <Calendar className="mr-2 h-4 w-4" />
-              Add to Calendar
-            </Button>
+    <Card 
+      className="hover:shadow-md transition-shadow cursor-pointer"
+      onClick={() => onMeetingClick(meeting)}
+    >
+      <CardHeader>
+        <div className="flex items-start justify-between">
+          <div className="space-y-1">
+            <CardTitle className="text-lg">{meeting.title}</CardTitle>
+            <CardDescription className="line-clamp-2">
+              {meeting.description}
+            </CardDescription>
           </div>
         </div>
-      </SheetContent>
-    </Sheet>
+        <div className="flex items-center gap-2">
+          <Badge className={getTypeColor(meeting.type)}>
+            {meeting.type}
+          </Badge>
+          <Badge className={getStatusColor(meeting.status)}>
+            {meeting.status}
+          </Badge>
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="flex items-center space-x-4 text-sm text-muted-foreground">
+          <div className="flex items-center space-x-1">
+            <Calendar className="h-4 w-4" />
+            <span>{meeting.date}</span>
+          </div>
+          <div className="flex items-center space-x-1">
+            <Clock className="h-4 w-4" />
+            <span>{meeting.time}</span>
+          </div>
+          <div className="flex items-center space-x-1">
+            {getFormatIcon(meeting.format)}
+            <span>{meeting.format}</span>
+          </div>
+          <div className="flex items-center space-x-1">
+            <Users className="h-4 w-4" />
+            <span>{meeting.attendees.length}/{meeting.maxAttendees}</span>
+          </div>
+        </div>
+        
+        <div className="flex flex-wrap gap-1">
+          {meeting.tags.map((tag, index) => (
+            <Badge key={index} variant="secondary" className="text-xs">
+              {tag}
+            </Badge>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
   );
 }
 
@@ -255,8 +143,20 @@ export default function MeetingsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('all');
   const [selectedType, setSelectedType] = useState('all');
+  const [selectedMeeting, setSelectedMeeting] = useState<Meeting | null>(null);
+  const [isSidePanelOpen, setIsSidePanelOpen] = useState(false);
 
   const meetingTypes = meetings ? Array.from(new Set(meetings.map(meeting => meeting.type))) : [];
+
+  const handleMeetingClick = (meeting: Meeting) => {
+    setSelectedMeeting(meeting);
+    setIsSidePanelOpen(true);
+  };
+
+  const handleCloseSidePanel = () => {
+    setIsSidePanelOpen(false);
+    setSelectedMeeting(null);
+  };
 
   // Sort meetings by date and status
   const sortMeetings = (meetings: Meeting[]) => {
@@ -387,7 +287,8 @@ export default function MeetingsPage() {
             {sortedMeetings.map((meeting) => (
               <MeetingCard 
                 key={meeting.id} 
-                meeting={meeting} 
+                meeting={meeting}
+                onMeetingClick={handleMeetingClick}
               />
             ))}
           </div>
@@ -398,7 +299,8 @@ export default function MeetingsPage() {
             {sortMeetings(filteredMeetings.filter(m => m.status === 'confirmed')).map((meeting) => (
               <MeetingCard 
                 key={meeting.id} 
-                meeting={meeting} 
+                meeting={meeting}
+                onMeetingClick={handleMeetingClick}
               />
             ))}
           </div>
@@ -409,7 +311,8 @@ export default function MeetingsPage() {
             {sortMeetings(filteredMeetings.filter(m => m.status === 'pending')).map((meeting) => (
               <MeetingCard 
                 key={meeting.id} 
-                meeting={meeting} 
+                meeting={meeting}
+                onMeetingClick={handleMeetingClick}
               />
             ))}
           </div>
@@ -420,12 +323,20 @@ export default function MeetingsPage() {
             {sortMeetings(filteredMeetings.filter(m => m.status === 'completed')).map((meeting) => (
               <MeetingCard 
                 key={meeting.id} 
-                meeting={meeting} 
+                meeting={meeting}
+                onMeetingClick={handleMeetingClick}
               />
             ))}
           </div>
         </TabsContent>
       </Tabs>
+
+      {/* Meeting Side Panel */}
+      <MeetingSidePanel
+        meeting={selectedMeeting}
+        isOpen={isSidePanelOpen}
+        onClose={handleCloseSidePanel}
+      />
     </div>
   );
 } 

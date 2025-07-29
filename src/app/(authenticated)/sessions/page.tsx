@@ -127,7 +127,6 @@ function SessionCard({ session, onSessionClick }: { session: Session; onSessionC
 
 export default function SessionsPage() {
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedStatus, setSelectedStatus] = useState('all');
   const [selectedType, setSelectedType] = useState('all');
   const [sortBy, setSortBy] = useState('date-asc');
   const [selectedSession, setSelectedSession] = useState<Session | null>(null);
@@ -215,9 +214,8 @@ export default function SessionsPage() {
     const matchesSearch = session.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          session.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          session.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
-    const matchesStatus = selectedStatus === 'all' || session.status === selectedStatus;
     const matchesType = selectedType === 'all' || session.type === selectedType;
-    return matchesSearch && matchesStatus && matchesType;
+    return matchesSearch && matchesType;
   });
 
   const sortedSessions = sortSessions(filteredSessions);
@@ -254,17 +252,6 @@ export default function SessionsPage() {
                 {type.charAt(0).toUpperCase() + type.slice(1)}
               </SelectItem>
             ))}
-          </SelectContent>
-        </Select>
-        <Select value={selectedStatus} onValueChange={setSelectedStatus}>
-          <SelectTrigger className="w-full sm:w-[200px]">
-            <SelectValue placeholder="Filter by status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Statuses</SelectItem>
-            <SelectItem value="upcoming">Upcoming</SelectItem>
-            <SelectItem value="ongoing">Ongoing</SelectItem>
-            <SelectItem value="completed">Completed</SelectItem>
           </SelectContent>
         </Select>
         <Select value={sortBy} onValueChange={setSortBy}>
