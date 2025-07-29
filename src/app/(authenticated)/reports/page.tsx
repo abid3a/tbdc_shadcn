@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import {
   Calendar,
   Users,
@@ -27,8 +28,31 @@ import {
 import { Metric, ReportData, TopPerformer } from '@/data/types';
 import { reports } from '@/data';
 
-// Cast the reports data to the correct type
-const typedMetrics = reports.metrics as Metric[];
+// Map icons to metrics based on their labels
+const getMetricIcon = (label: string) => {
+  switch (label.toLowerCase()) {
+    case 'total sessions':
+      return Calendar;
+    case 'active users':
+      return Users;
+    case 'revenue generated':
+      return DollarSign;
+    case 'success rate':
+      return Target;
+    case 'avg session duration':
+      return Clock;
+    case 'mentor satisfaction':
+      return Award;
+    default:
+      return Activity;
+  }
+};
+
+// Cast the reports data to the correct type and add icons
+const typedMetrics = reports.metrics.map(metric => ({
+  ...metric,
+  icon: getMetricIcon(metric.label)
+})) as Metric[];
 const typedReportData = reports.reportData as ReportData[];
 const typedTopPerformers = reports.topPerformers as TopPerformer[];
 
