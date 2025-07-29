@@ -1,0 +1,98 @@
+{
+  "users": [
+    {
+      "id": "1",
+      "name": "Sarah Chen",
+      "email": "sarah@productstrategy.com",
+      "role": "mentor",
+      "status": "active",
+      "avatar": "/avatars/sarah.jpg",
+      "lastActive": "2 hours ago",
+      "joinedDate": "2023-01-15",
+      "sessions": 24,
+      "meetings": 18
+    },
+    {
+      "id": "2",
+      "name": "Michael Rodriguez",
+      "email": "michael@vcpartners.com",
+      "role": "partner",
+      "status": "active",
+      "avatar": "/avatars/michael.jpg",
+      "lastActive": "1 day ago",
+      "joinedDate": "2023-02-20",
+      "sessions": 18,
+      "meetings": 25
+    },
+    {
+      "id": "3",
+      "name": "David Kim",
+      "email": "david@techsolutions.com",
+      "role": "mentor",
+      "status": "active",
+      "avatar": "/avatars/david.jpg",
+      "lastActive": "3 hours ago",
+      "joinedDate": "2023-03-10",
+      "sessions": 22,
+      "meetings": 15
+    },
+    {
+      "id": "4",
+      "name": "Emily Johnson",
+      "email": "emily@communityhub.com",
+      "role": "founder",
+      "status": "pending",
+      "avatar": "/avatars/emily.jpg",
+      "lastActive": "Never",
+      "joinedDate": "2024-01-05",
+      "sessions": 0,
+      "meetings": 0
+    },
+    {
+      "id": "5",
+      "name": "Alex Thompson",
+      "email": "alex@innovatelabs.com",
+      "role": "founder",
+      "status": "inactive",
+      "avatar": "/avatars/alex.jpg",
+      "lastActive": "2 weeks ago",
+      "joinedDate": "2023-06-15",
+      "sessions": 8,
+      "meetings": 5
+    }
+  ],
+  "systemAlerts": [
+    {
+      "id": "1",
+      "type": "warning",
+      "title": "High Server Load",
+      "message": "Server CPU usage is at 85%. Consider scaling up resources.",
+      "timestamp": "2 hours ago",
+      "status": "active"
+    },
+    {
+      "id": "2",
+      "type": "info",
+      "title": "System Maintenance",
+      "message": "Scheduled maintenance completed successfully.",
+      "timestamp": "1 day ago",
+      "status": "resolved"
+    },
+    {
+      "id": "3",
+      "type": "error",
+      "title": "Database Connection Issue",
+      "message": "Database connection timeout detected. Investigating...",
+      "timestamp": "3 hours ago",
+      "status": "active"
+    },
+    {
+      "id": "4",
+      "type": "success",
+      "title": "Backup Completed",
+      "message": "Daily backup completed successfully.",
+      "timestamp": "6 hours ago",
+      "status": "resolved"
+    }
+  ]
+}

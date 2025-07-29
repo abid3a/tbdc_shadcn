@@ -1,0 +1,76 @@
+{
+  "sessions": [
+    {
+      "id": "1",
+      "title": "Product Strategy Workshop",
+      "description": "Learn how to develop and execute a winning product strategy for your startup.",
+      "type": "workshop",
+      "status": "upcoming",
+      "date": "2024-01-15",
+      "time": "10:00 AM",
+      "duration": "2 hours",
+      "mentor": {
+        "name": "Sarah Chen",
+        "avatar": "/avatars/sarah.jpg",
+        "company": "Product Strategy Inc."
+      },
+      "attendees": 12,
+      "maxAttendees": 20,
+      "tags": ["Product", "Strategy", "Workshop"]
+    },
+    {
+      "id": "2",
+      "title": "Investor Pitch Practice",
+      "description": "Practice your pitch with experienced investors and get valuable feedback.",
+      "type": "pitch",
+      "status": "ongoing",
+      "date": "2024-01-12",
+      "time": "2:00 PM",
+      "duration": "1 hour",
+      "mentor": {
+        "name": "Michael Rodriguez",
+        "avatar": "/avatars/michael.jpg",
+        "company": "Venture Capital Partners"
+      },
+      "attendees": 8,
+      "maxAttendees": 10,
+      "tags": ["Pitch", "Investor", "Practice"]
+    },
+    {
+      "id": "3",
+      "title": "Networking Mixer",
+      "description": "Connect with fellow founders, mentors, and investors in a casual setting.",
+      "type": "networking",
+      "status": "upcoming",
+      "date": "2024-01-18",
+      "time": "6:00 PM",
+      "duration": "3 hours",
+      "mentor": {
+        "name": "Emily Johnson",
+        "avatar": "/avatars/emily.jpg",
+        "company": "Startup Community Hub"
+      },
+      "attendees": 25,
+      "maxAttendees": 50,
+      "tags": ["Networking", "Community", "Social"]
+    },
+    {
+      "id": "4",
+      "title": "Technical Architecture Review",
+      "description": "Get expert advice on your technical architecture and scalability plans.",
+      "type": "mentoring",
+      "status": "completed",
+      "date": "2024-01-10",
+      "time": "11:00 AM",
+      "duration": "1.5 hours",
+      "mentor": {
+        "name": "David Kim",
+        "avatar": "/avatars/david.jpg",
+        "company": "Tech Solutions LLC"
+      },
+      "attendees": 1,
+      "maxAttendees": 1,
+      "tags": ["Technical", "Architecture", "Review"]
+    }
+  ]
+}

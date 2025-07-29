@@ -1,0 +1,118 @@
+{
+  "sessionConnections": [
+    {
+      "id": "sc1",
+      "sessionId": "1",
+      "connectionId": "1",
+      "role": "mentor",
+      "joinedAt": "2024-01-10",
+      "status": "confirmed"
+    },
+    {
+      "id": "sc2",
+      "sessionId": "2",
+      "connectionId": "2",
+      "role": "mentor",
+      "joinedAt": "2024-01-08",
+      "status": "confirmed"
+    },
+    {
+      "id": "sc3",
+      "sessionId": "3",
+      "connectionId": "3",
+      "role": "mentor",
+      "joinedAt": "2024-01-12",
+      "status": "confirmed"
+    },
+    {
+      "id": "sc4",
+      "sessionId": "4",
+      "connectionId": "4",
+      "role": "mentor",
+      "joinedAt": "2024-01-05",
+      "status": "confirmed"
+    },
+    {
+      "id": "sc5",
+      "sessionId": "1",
+      "connectionId": "2",
+      "role": "attendee",
+      "joinedAt": "2024-01-11",
+      "status": "confirmed"
+    },
+    {
+      "id": "sc6",
+      "sessionId": "2",
+      "connectionId": "1",
+      "role": "attendee",
+      "joinedAt": "2024-01-09",
+      "status": "confirmed"
+    },
+    {
+      "id": "sc7",
+      "sessionId": "3",
+      "connectionId": "4",
+      "role": "attendee",
+      "joinedAt": "2024-01-13",
+      "status": "pending"
+    }
+  ],
+  "meetingConnections": [
+    {
+      "id": "mc1",
+      "meetingId": "1",
+      "connectionId": "1",
+      "role": "attendee",
+      "joinedAt": "2024-01-10",
+      "status": "confirmed"
+    },
+    {
+      "id": "mc2",
+      "meetingId": "2",
+      "connectionId": "2",
+      "role": "attendee",
+      "joinedAt": "2024-01-08",
+      "status": "confirmed"
+    },
+    {
+      "id": "mc3",
+      "meetingId": "2",
+      "connectionId": "3",
+      "role": "attendee",
+      "joinedAt": "2024-01-08",
+      "status": "confirmed"
+    },
+    {
+      "id": "mc4",
+      "meetingId": "3",
+      "connectionId": "4",
+      "role": "attendee",
+      "joinedAt": "2024-01-05",
+      "status": "confirmed"
+    },
+    {
+      "id": "mc5",
+      "meetingId": "4",
+      "connectionId": "1",
+      "role": "organizer",
+      "joinedAt": "2024-01-12",
+      "status": "confirmed"
+    },
+    {
+      "id": "mc6",
+      "meetingId": "4",
+      "connectionId": "2",
+      "role": "attendee",
+      "joinedAt": "2024-01-12",
+      "status": "pending"
+    },
+    {
+      "id": "mc7",
+      "meetingId": "4",
+      "connectionId": "4",
+      "role": "attendee",
+      "joinedAt": "2024-01-12",
+      "status": "confirmed"
+    }
+  ]
+}

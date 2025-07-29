@@ -1,0 +1,120 @@
+{
+  "surgeRequests": [
+    {
+      "id": "1",
+      "title": "Critical Server Downtime",
+      "description": "Production server is down, affecting all customer-facing services. Need immediate technical assistance.",
+      "priority": "critical",
+      "category": "technical",
+      "status": "in-progress",
+      "requester": {
+        "name": "Alex Johnson",
+        "avatar": "/avatars/alex.jpg",
+        "company": "TechStart Inc."
+      },
+      "assignedTo": {
+        "name": "David Kim",
+        "avatar": "/avatars/david.jpg",
+        "role": "Technical Mentor"
+      },
+      "createdAt": "2 hours ago",
+      "updatedAt": "30 minutes ago",
+      "urgency": "Immediate",
+      "tags": ["Server", "Downtime", "Production"]
+    },
+    {
+      "id": "2",
+      "title": "Investor Meeting Crisis",
+      "description": "Major investor meeting tomorrow, need help with pitch deck and financial projections.",
+      "priority": "high",
+      "category": "business",
+      "status": "open",
+      "requester": {
+        "name": "Sarah Chen",
+        "avatar": "/avatars/sarah.jpg",
+        "company": "Product Strategy Inc."
+      },
+      "createdAt": "4 hours ago",
+      "updatedAt": "4 hours ago",
+      "urgency": "Today",
+      "tags": ["Investor", "Pitch", "Financial"]
+    },
+    {
+      "id": "3",
+      "title": "Legal Contract Review",
+      "description": "Urgent contract review needed for partnership agreement. Deadline is end of day.",
+      "priority": "high",
+      "category": "legal",
+      "status": "open",
+      "requester": {
+        "name": "Michael Rodriguez",
+        "avatar": "/avatars/michael.jpg",
+        "company": "Venture Capital Partners"
+      },
+      "createdAt": "6 hours ago",
+      "updatedAt": "6 hours ago",
+      "urgency": "End of Day",
+      "tags": ["Legal", "Contract", "Partnership"]
+    },
+    {
+      "id": "4",
+      "title": "Marketing Campaign Launch",
+      "description": "Product launch marketing campaign needs immediate review and optimization.",
+      "priority": "medium",
+      "category": "marketing",
+      "status": "resolved",
+      "requester": {
+        "name": "Emily Johnson",
+        "avatar": "/avatars/emily.jpg",
+        "company": "Startup Community Hub"
+      },
+      "assignedTo": {
+        "name": "Lisa Wang",
+        "avatar": "/avatars/lisa.jpg",
+        "role": "Marketing Mentor"
+      },
+      "createdAt": "1 day ago",
+      "updatedAt": "2 hours ago",
+      "urgency": "This Week",
+      "tags": ["Marketing", "Launch", "Campaign"]
+    }
+  ],
+  "availableMentors": [
+    {
+      "name": "David Kim",
+      "avatar": "/avatars/david.jpg",
+      "role": "Technical Mentor",
+      "expertise": ["Backend", "DevOps", "Architecture"],
+      "availability": "Available",
+      "rating": 4.9,
+      "responseTime": "5 min"
+    },
+    {
+      "name": "Sarah Chen",
+      "avatar": "/avatars/sarah.jpg",
+      "role": "Product Mentor",
+      "expertise": ["Product Strategy", "User Research", "Roadmapping"],
+      "availability": "Available",
+      "rating": 4.8,
+      "responseTime": "10 min"
+    },
+    {
+      "name": "Michael Rodriguez",
+      "avatar": "/avatars/michael.jpg",
+      "role": "Business Mentor",
+      "expertise": ["Fundraising", "Business Model", "Strategy"],
+      "availability": "Available",
+      "rating": 4.7,
+      "responseTime": "15 min"
+    },
+    {
+      "name": "Lisa Wang",
+      "avatar": "/avatars/lisa.jpg",
+      "role": "Marketing Mentor",
+      "expertise": ["Growth Marketing", "Branding", "Customer Acquisition"],
+      "availability": "Busy",
+      "rating": 4.6,
+      "responseTime": "30 min"
+    }
+  ]
+}

@@ -1,0 +1,68 @@
+{
+  "connections": [
+    {
+      "id": "1",
+      "name": "Sarah Chen",
+      "avatar": "/avatars/sarah.jpg",
+      "role": "Product Manager",
+      "company": "Product Strategy Inc.",
+      "industry": "Technology",
+      "status": "connected",
+      "mutualConnections": 5,
+      "lastContact": "2 days ago",
+      "tags": ["Product Strategy", "Startup Mentor", "Tech"],
+      "bio": "Experienced product manager with 10+ years in tech startups. Passionate about helping founders build successful products.",
+      "location": "San Francisco, CA",
+      "email": "sarah@productstrategy.com",
+      "isFavorite": true
+    },
+    {
+      "id": "2",
+      "name": "Michael Rodriguez",
+      "avatar": "/avatars/michael.jpg",
+      "role": "Investor",
+      "company": "Venture Capital Partners",
+      "industry": "Finance",
+      "status": "connected",
+      "mutualConnections": 3,
+      "lastContact": "1 week ago",
+      "tags": ["Investment", "Venture Capital", "Fintech"],
+      "bio": "Early-stage investor focused on fintech and SaaS startups. Looking for innovative founders with strong execution.",
+      "location": "New York, NY",
+      "email": "michael@vcpartners.com",
+      "isFavorite": false
+    },
+    {
+      "id": "3",
+      "name": "Emily Johnson",
+      "avatar": "/avatars/emily.jpg",
+      "role": "Founder",
+      "company": "Startup Community Hub",
+      "industry": "Community",
+      "status": "pending",
+      "mutualConnections": 8,
+      "lastContact": "3 days ago",
+      "tags": ["Community Building", "Startup Ecosystem", "Networking"],
+      "bio": "Building communities that connect founders, mentors, and investors. Passionate about startup ecosystem development.",
+      "location": "Austin, TX",
+      "email": "emily@communityhub.com",
+      "isFavorite": true
+    },
+    {
+      "id": "4",
+      "name": "David Kim",
+      "avatar": "/avatars/david.jpg",
+      "role": "CTO",
+      "company": "Tech Solutions LLC",
+      "industry": "Technology",
+      "status": "requested",
+      "mutualConnections": 2,
+      "lastContact": "Never",
+      "tags": ["Technical Architecture", "Scalability", "Engineering"],
+      "bio": "Technical leader with expertise in building scalable systems. Helping startups architect their technology stack.",
+      "location": "Seattle, WA",
+      "email": "david@techsolutions.com",
+      "isFavorite": false
+    }
+  ]
+}

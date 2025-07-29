@@ -1,0 +1,108 @@
+{
+  "metrics": [
+    {
+      "label": "Total Sessions",
+      "value": "156",
+      "change": "+12%",
+      "trend": "up"
+    },
+    {
+      "label": "Active Users",
+      "value": "2,847",
+      "change": "+8%",
+      "trend": "up"
+    },
+    {
+      "label": "Revenue Generated",
+      "value": "$1.2M",
+      "change": "+23%",
+      "trend": "up"
+    },
+    {
+      "label": "Success Rate",
+      "value": "84%",
+      "change": "+5%",
+      "trend": "up"
+    },
+    {
+      "label": "Avg Session Duration",
+      "value": "45 min",
+      "change": "-2%",
+      "trend": "down"
+    },
+    {
+      "label": "Mentor Satisfaction",
+      "value": "4.8/5",
+      "change": "+0.2",
+      "trend": "up"
+    }
+  ],
+  "reportData": [
+    {
+      "period": "Q1 2024",
+      "sessions": 45,
+      "meetings": 89,
+      "connections": 234,
+      "companies": 12,
+      "revenue": "$320K",
+      "growth": "+15%"
+    },
+    {
+      "period": "Q4 2023",
+      "sessions": 38,
+      "meetings": 76,
+      "connections": 198,
+      "companies": 10,
+      "revenue": "$280K",
+      "growth": "+12%"
+    },
+    {
+      "period": "Q3 2023",
+      "sessions": 32,
+      "meetings": 65,
+      "connections": 167,
+      "companies": 8,
+      "revenue": "$250K",
+      "growth": "+8%"
+    },
+    {
+      "period": "Q2 2023",
+      "sessions": 28,
+      "meetings": 54,
+      "connections": 145,
+      "companies": 7,
+      "revenue": "$230K",
+      "growth": "+5%"
+    }
+  ],
+  "topPerformers": [
+    {
+      "name": "Sarah Chen",
+      "role": "Product Mentor",
+      "sessions": 24,
+      "rating": 4.9,
+      "impact": "High"
+    },
+    {
+      "name": "Michael Rodriguez",
+      "role": "Investor",
+      "meetings": 18,
+      "rating": 4.8,
+      "impact": "High"
+    },
+    {
+      "name": "David Kim",
+      "role": "Technical Mentor",
+      "sessions": 22,
+      "rating": 4.7,
+      "impact": "Medium"
+    },
+    {
+      "name": "Emily Johnson",
+      "role": "Community Builder",
+      "sessions": 19,
+      "rating": 4.6,
+      "impact": "Medium"
+    }
+  ]
+}

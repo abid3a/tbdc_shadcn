@@ -24,178 +24,11 @@ import {
   Target,
   Zap
 } from 'lucide-react';
+import { Company } from '@/data/types';
+import { companies } from '@/data';
 
-interface Company {
-  id: string;
-  name: string;
-  logo: string;
-  description: string;
-  industry: string;
-  stage: 'idea' | 'mvp' | 'early-traction' | 'growth' | 'scaling';
-  status: 'active' | 'paused' | 'graduated' | 'failed';
-  founded: string;
-  location: string;
-  teamSize: number;
-  funding: {
-    total: string;
-    stage: string;
-    investors: string[];
-  };
-  metrics: {
-    revenue: string;
-    users: string;
-    growth: string;
-  };
-  founders: {
-    name: string;
-    avatar: string;
-    role: string;
-  }[];
-  tags: string[];
-  website: string;
-}
-
-const mockCompanies: Company[] = [
-  {
-    id: '1',
-    name: 'TechStart Inc.',
-    logo: '/logos/techstart.png',
-    description: 'AI-powered customer service platform that helps businesses automate support and improve customer satisfaction.',
-    industry: 'SaaS',
-    stage: 'growth',
-    status: 'active',
-    founded: '2022',
-    location: 'San Francisco, CA',
-    teamSize: 25,
-    funding: {
-      total: '$2.5M',
-      stage: 'Series A',
-      investors: ['Venture Capital Partners', 'Angel Investors Group']
-    },
-    metrics: {
-      revenue: '$500K ARR',
-      users: '10K+',
-      growth: '+150% YoY'
-    },
-    founders: [
-      {
-        name: 'Alex Johnson',
-        avatar: '/avatars/alex.jpg',
-        role: 'CEO & Co-founder'
-      },
-      {
-        name: 'Sarah Chen',
-        avatar: '/avatars/sarah.jpg',
-        role: 'CTO & Co-founder'
-      }
-    ],
-    tags: ['AI', 'Customer Service', 'Automation', 'B2B'],
-    website: 'https://techstart.com'
-  },
-  {
-    id: '2',
-    name: 'DataFlow Solutions',
-    logo: '/logos/dataflow.png',
-    description: 'Real-time data analytics platform for manufacturing companies to optimize operations and reduce costs.',
-    industry: 'Industrial Tech',
-    stage: 'early-traction',
-    status: 'active',
-    founded: '2023',
-    location: 'Austin, TX',
-    teamSize: 12,
-    funding: {
-      total: '$800K',
-      stage: 'Seed',
-      investors: ['Industrial Ventures', 'Local Angels']
-    },
-    metrics: {
-      revenue: '$120K ARR',
-      users: '500+',
-      growth: '+80% YoY'
-    },
-    founders: [
-      {
-        name: 'David Kim',
-        avatar: '/avatars/david.jpg',
-        role: 'CEO & Founder'
-      }
-    ],
-    tags: ['IoT', 'Manufacturing', 'Analytics', 'Industrial'],
-    website: 'https://dataflow.com'
-  },
-  {
-    id: '3',
-    name: 'GreenEnergy Tech',
-    logo: '/logos/greenenergy.png',
-    description: 'Renewable energy management platform for residential and commercial properties.',
-    industry: 'Clean Tech',
-    stage: 'mvp',
-    status: 'active',
-    founded: '2023',
-    location: 'Denver, CO',
-    teamSize: 8,
-    funding: {
-      total: '$300K',
-      stage: 'Pre-seed',
-      investors: ['Green Ventures', 'Climate Angels']
-    },
-    metrics: {
-      revenue: '$50K ARR',
-      users: '200+',
-      growth: '+200% YoY'
-    },
-    founders: [
-      {
-        name: 'Lisa Wang',
-        avatar: '/avatars/lisa.jpg',
-        role: 'CEO & Co-founder'
-      },
-      {
-        name: 'Mike Rodriguez',
-        avatar: '/avatars/mike.jpg',
-        role: 'CTO & Co-founder'
-      }
-    ],
-    tags: ['Clean Tech', 'Energy', 'Sustainability', 'IoT'],
-    website: 'https://greenenergy.com'
-  },
-  {
-    id: '4',
-    name: 'HealthTech Pro',
-    logo: '/logos/healthtech.png',
-    description: 'Telemedicine platform connecting patients with healthcare providers for remote consultations.',
-    industry: 'Health Tech',
-    stage: 'scaling',
-    status: 'graduated',
-    founded: '2021',
-    location: 'Boston, MA',
-    teamSize: 45,
-    funding: {
-      total: '$5M',
-      stage: 'Series B',
-      investors: ['Health Ventures', 'Digital Health Fund', 'Strategic Partners']
-    },
-    metrics: {
-      revenue: '$2M ARR',
-      users: '50K+',
-      growth: '+300% YoY'
-    },
-    founders: [
-      {
-        name: 'Dr. Emily Johnson',
-        avatar: '/avatars/emily.jpg',
-        role: 'CEO & Co-founder'
-      },
-      {
-        name: 'Dr. Robert Smith',
-        avatar: '/avatars/robert.jpg',
-        role: 'CMO & Co-founder'
-      }
-    ],
-    tags: ['Health Tech', 'Telemedicine', 'Healthcare', 'B2B2C'],
-    website: 'https://healthtechpro.com'
-  }
-];
+// Cast the companies data to the correct type
+const typedCompanies = companies as Company[];
 
 export default function CompaniesPage() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -203,10 +36,10 @@ export default function CompaniesPage() {
   const [selectedStage, setSelectedStage] = useState('all');
   const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
 
-  const industries = Array.from(new Set(mockCompanies.map(company => company.industry)));
-  const stages = Array.from(new Set(mockCompanies.map(company => company.stage)));
+  const industries = Array.from(new Set(typedCompanies.map(company => company.industry)));
+  const stages = Array.from(new Set(typedCompanies.map(company => company.stage)));
 
-  const filteredCompanies = mockCompanies.filter(company => {
+  const filteredCompanies = typedCompanies.filter(company => {
     const matchesSearch = company.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          company.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          company.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));

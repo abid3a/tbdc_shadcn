@@ -1,0 +1,107 @@
+{
+  "companies": [
+    {
+      "id": "1",
+      "name": "TechStart Inc.",
+      "logo": "/logos/techstart.png",
+      "description": "AI-powered customer service platform that helps businesses automate support and improve customer satisfaction.",
+      "industry": "SaaS",
+      "stage": "growth",
+      "status": "active",
+      "founded": "2022",
+      "location": "San Francisco, CA",
+      "teamSize": 25,
+      "funding": {
+        "total": "$2.5M",
+        "stage": "Series A",
+        "investors": ["Venture Capital Partners", "Angel Investors Group"]
+      },
+      "metrics": {
+        "revenue": "$500K ARR",
+        "users": "10K+",
+        "growth": "+150% YoY"
+      },
+      "founders": [
+        {
+          "name": "Alex Johnson",
+          "avatar": "/avatars/alex.jpg",
+          "role": "CEO & Co-founder"
+        },
+        {
+          "name": "Sarah Chen",
+          "avatar": "/avatars/sarah.jpg",
+          "role": "CTO & Co-founder"
+        }
+      ],
+      "tags": ["AI", "Customer Service", "Automation", "B2B"],
+      "website": "https://techstart.com"
+    },
+    {
+      "id": "2",
+      "name": "DataFlow Solutions",
+      "logo": "/logos/dataflow.png",
+      "description": "Real-time data analytics platform for manufacturing companies to optimize operations and reduce costs.",
+      "industry": "Industrial Tech",
+      "stage": "early-traction",
+      "status": "active",
+      "founded": "2023",
+      "location": "Austin, TX",
+      "teamSize": 12,
+      "funding": {
+        "total": "$800K",
+        "stage": "Seed",
+        "investors": ["Industrial Ventures", "Local Angels"]
+      },
+      "metrics": {
+        "revenue": "$120K ARR",
+        "users": "500+",
+        "growth": "+80% YoY"
+      },
+      "founders": [
+        {
+          "name": "David Kim",
+          "avatar": "/avatars/david.jpg",
+          "role": "CEO & Founder"
+        }
+      ],
+      "tags": ["IoT", "Manufacturing", "Analytics", "Industrial"],
+      "website": "https://dataflow.com"
+    },
+    {
+      "id": "3",
+      "name": "GreenEnergy Tech",
+      "logo": "/logos/greenenergy.png",
+      "description": "Renewable energy management platform for residential and commercial properties.",
+      "industry": "Clean Tech",
+      "stage": "mvp",
+      "status": "active",
+      "founded": "2023",
+      "location": "Denver, CO",
+      "teamSize": 8,
+      "funding": {
+        "total": "$300K",
+        "stage": "Pre-seed",
+        "investors": ["Green Ventures", "Climate Angels"]
+      },
+      "metrics": {
+        "revenue": "$50K ARR",
+        "users": "200+",
+        "growth": "+200% YoY"
+      },
+      "founders": [
+        {
+          "name": "Lisa Wang",
+          "avatar": "/avatars/lisa.jpg",
+          "role": "CEO & Co-founder"
+        },
+        {
+          "name": "Mike Rodriguez",
+          "avatar": "/avatars/mike.jpg",
+          "role": "CTO & Co-founder"
+        }
+      ],
+      "tags": ["Renewable Energy", "Sustainability", "IoT", "Clean Tech"],
+      "website": "https://greenenergy.com"
+    }
+  ]
+}

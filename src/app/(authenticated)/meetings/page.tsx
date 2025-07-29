@@ -10,50 +10,41 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useAuth } from '@/contexts/auth-context';
+import { useMeetings } from '@/hooks/use-data';
+import { getMeetingConnections } from '@/data';
 import {
-  Search,
   Calendar,
   Clock,
+  MapPin,
   Users,
   Video,
   Phone,
-  MapPin,
+  MessageSquare,
   Plus,
+  Search,
+  Filter,
   ExternalLink,
-  MessageSquare
+  CheckCircle,
+  XCircle,
+  AlertCircle,
+  Mail,
+  Building2,
+  RefreshCw
 } from 'lucide-react';
-
-interface Meeting {
-  id: string;
-  title: string;
-  description: string;
-  type: 'one-on-one' | 'group' | 'pitch' | 'mentoring';
-  status: 'scheduled' | 'ongoing' | 'completed' | 'cancelled';
-  date: string;
-  time: string;
-  duration: string;
-  format: 'video' | 'phone' | 'in-person';
-  location?: string;
-  attendees: {
-    name: string;
-    avatar: string;
-    role: string;
-    company: string;
-  }[];
-  maxAttendees: number;
-  tags: string[];
-}
+import { Meeting } from '@/data/types';
 
 // Helper functions
 const getStatusColor = (status: string) => {
   switch (status) {
-    case 'scheduled':
-      return 'bg-blue-100 text-blue-800';
-    case 'ongoing':
+    case 'confirmed':
       return 'bg-green-100 text-green-800';
+    case 'pending':
+      return 'bg-yellow-100 text-yellow-800';
     case 'completed':
-      return 'bg-gray-100 text-gray-800';
+      return 'bg-blue-100 text-blue-800';
     case 'cancelled':
       return 'bg-red-100 text-red-800';
     default:
@@ -63,14 +54,14 @@ const getStatusColor = (status: string) => {
 
 const getTypeColor = (type: string) => {
   switch (type) {
-    case 'one-on-one':
+    case 'investor':
       return 'bg-purple-100 text-purple-800';
-    case 'group':
+    case 'eir':
       return 'bg-orange-100 text-orange-800';
-    case 'pitch':
-      return 'bg-red-100 text-red-800';
-    case 'mentoring':
-      return 'bg-green-100 text-green-800';
+    case 'customer':
+      return 'bg-blue-100 text-blue-800';
+    case 'internal':
+      return 'bg-gray-100 text-gray-800';
     default:
       return 'bg-gray-100 text-gray-800';
   }
@@ -89,132 +80,10 @@ const getFormatIcon = (format: string) => {
   }
 };
 
-const mockMeetings: Meeting[] = [
-  {
-    id: '1',
-    title: 'Product Strategy Discussion',
-    description: 'Deep dive into product roadmap and strategic planning for Q1.',
-    type: 'one-on-one',
-    status: 'scheduled',
-    date: '2024-01-15',
-    time: '10:00 AM',
-    duration: '1 hour',
-    format: 'video',
-    attendees: [
-      {
-        name: 'Sarah Chen',
-        avatar: '/avatars/sarah.jpg',
-        role: 'Product Mentor',
-        company: 'Product Strategy Inc.'
-      },
-      {
-        name: 'Demo Founder',
-        avatar: '/avatars/founder.jpg',
-        role: 'Founder',
-        company: 'TechStart Inc.'
-      }
-    ],
-    maxAttendees: 2,
-    tags: ['Product', 'Strategy', 'Planning']
-  },
-  {
-    id: '2',
-    title: 'Investor Pitch Review',
-    description: 'Practice pitch presentation and receive feedback from investors.',
-    type: 'pitch',
-    status: 'scheduled',
-    date: '2024-01-16',
-    time: '2:00 PM',
-    duration: '1.5 hours',
-    format: 'video',
-    attendees: [
-      {
-        name: 'Michael Rodriguez',
-        avatar: '/avatars/michael.jpg',
-        role: 'Investor',
-        company: 'Venture Capital Partners'
-      },
-      {
-        name: 'Emily Johnson',
-        avatar: '/avatars/emily.jpg',
-        role: 'Investor',
-        company: 'Startup Ventures'
-      },
-      {
-        name: 'Demo Founder',
-        avatar: '/avatars/founder.jpg',
-        role: 'Founder',
-        company: 'TechStart Inc.'
-      }
-    ],
-    maxAttendees: 5,
-    tags: ['Pitch', 'Investment', 'Presentation']
-  },
-  {
-    id: '3',
-    title: 'Technical Architecture Review',
-    description: 'Review technical architecture and discuss scalability plans.',
-    type: 'mentoring',
-    status: 'ongoing',
-    date: '2024-01-12',
-    time: '11:00 AM',
-    duration: '2 hours',
-    format: 'video',
-    attendees: [
-      {
-        name: 'David Kim',
-        avatar: '/avatars/david.jpg',
-        role: 'Technical Mentor',
-        company: 'Tech Solutions LLC'
-      },
-      {
-        name: 'Demo Founder',
-        avatar: '/avatars/founder.jpg',
-        role: 'Founder',
-        company: 'TechStart Inc.'
-      }
-    ],
-    maxAttendees: 2,
-    tags: ['Technical', 'Architecture', 'Scalability']
-  },
-  {
-    id: '4',
-    title: 'Cohort Networking Event',
-    description: 'Connect with fellow cohort members and share experiences.',
-    type: 'group',
-    status: 'scheduled',
-    date: '2024-01-18',
-    time: '6:00 PM',
-    duration: '2 hours',
-    format: 'in-person',
-    location: 'TBDC Office, Downtown',
-    attendees: [
-      {
-        name: 'Demo Founder',
-        avatar: '/avatars/founder.jpg',
-        role: 'Founder',
-        company: 'TechStart Inc.'
-      },
-      {
-        name: 'Alex Thompson',
-        avatar: '/avatars/alex.jpg',
-        role: 'Founder',
-        company: 'Innovate Labs'
-      },
-      {
-        name: 'Lisa Wang',
-        avatar: '/avatars/lisa.jpg',
-        role: 'Founder',
-        company: 'DataFlow Solutions'
-      }
-    ],
-    maxAttendees: 20,
-    tags: ['Networking', 'Cohort', 'Community']
-  }
-];
-
 // Meeting Card Component
 function MeetingCard({ meeting }: { meeting: Meeting }) {
+  const meetingConnections = getMeetingConnections(meeting.id);
+
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -247,64 +116,32 @@ function MeetingCard({ meeting }: { meeting: Meeting }) {
                 <Clock className="h-4 w-4" />
                 <span>{meeting.time}</span>
               </div>
-            </div>
-
-            <div className="flex items-center space-x-2">
-              <div className="flex items-center space-x-1 text-sm text-muted-foreground">
+              <div className="flex items-center space-x-1">
                 {getFormatIcon(meeting.format)}
-                <span className="capitalize">{meeting.format}</span>
+                <span>{meeting.format}</span>
               </div>
-              {meeting.location && (
-                <div className="flex items-center space-x-1 text-sm text-muted-foreground">
-                  <MapPin className="h-4 w-4" />
-                  <span>{meeting.location}</span>
-                </div>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <div className="flex items-center space-x-1 text-sm text-muted-foreground">
+              <div className="flex items-center space-x-1">
                 <Users className="h-4 w-4" />
-                <span>{meeting.attendees.length}/{meeting.maxAttendees} attendees</span>
-              </div>
-              <div className="flex -space-x-2">
-                {meeting.attendees.slice(0, 3).map((attendee, index) => (
-                  <Avatar key={index} className="h-8 w-8 border-2 border-background">
-                    <AvatarImage src={attendee.avatar} alt={attendee.name} />
-                    <AvatarFallback>{attendee.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
-                  </Avatar>
-                ))}
-                {meeting.attendees.length > 3 && (
-                  <div className="flex items-center justify-center h-8 w-8 rounded-full bg-muted text-xs font-medium border-2 border-background">
-                    +{meeting.attendees.length - 3}
-                  </div>
-                )}
+                <span>{meeting.attendees.length}/{meeting.maxAttendees}</span>
               </div>
             </div>
-
-            <div className="flex items-center justify-end">
-              <div className="flex flex-wrap gap-1">
-                {meeting.tags.slice(0, 2).map((tag) => (
-                  <Badge key={tag} variant="secondary" className="text-xs">
-                    {tag}
-                  </Badge>
-                ))}
-                {meeting.tags.length > 2 && (
-                  <Badge variant="secondary" className="text-xs">
-                    +{meeting.tags.length - 2} more
-                  </Badge>
-                )}
-              </div>
+            
+            <div className="flex flex-wrap gap-1">
+              {meeting.tags.map((tag, index) => (
+                <Badge key={index} variant="secondary" className="text-xs">
+                  {tag}
+                </Badge>
+              ))}
             </div>
           </CardContent>
         </Card>
       </SheetTrigger>
-      <SheetContent className="overflow-y-auto">
+      <SheetContent className="w-4/5 sm:max-w-md lg:max-w-lg xl:max-w-xl">
         <SheetHeader>
           <SheetTitle>{meeting.title}</SheetTitle>
           <SheetDescription>{meeting.description}</SheetDescription>
         </SheetHeader>
-        <div className="px-6 space-y-6 pb-6">
+        <div className="px-6 space-y-6 pt-6">
           <div className="flex items-center space-x-2">
             <Badge className={getTypeColor(meeting.type)}>
               {meeting.type}
@@ -316,61 +153,94 @@ function MeetingCard({ meeting }: { meeting: Meeting }) {
           
           <Separator />
           
-          <div className="space-y-2">
-            <h4 className="font-medium">Meeting Details</h4>
-            <div className="grid grid-cols-2 gap-2 text-sm">
-              <div>Date: {meeting.date}</div>
-              <div>Time: {meeting.time}</div>
-              <div>Duration: {meeting.duration}</div>
-              <div>Format: {meeting.format}</div>
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-4 text-sm">
+              <div>
+                <span className="text-muted-foreground">Date:</span>
+                <p className="font-medium">{meeting.date}</p>
+              </div>
+              <div>
+                <span className="text-muted-foreground">Time:</span>
+                <p className="font-medium">{meeting.time}</p>
+              </div>
+              <div>
+                <span className="text-muted-foreground">Duration:</span>
+                <p className="font-medium">{meeting.duration}</p>
+              </div>
+              <div>
+                <span className="text-muted-foreground">Format:</span>
+                <p className="font-medium">{meeting.format}</p>
+              </div>
               {meeting.location && (
-                <div className="col-span-2">Location: {meeting.location}</div>
+                <div>
+                  <span className="text-muted-foreground">Location:</span>
+                  <p className="font-medium">{meeting.location}</p>
+                </div>
+              )}
+              {meeting.meetingUrl && (
+                <div>
+                  <span className="text-muted-foreground">Meeting URL:</span>
+                  <p className="font-medium">
+                    <a href={meeting.meetingUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                      Join Meeting
+                    </a>
+                  </p>
+                </div>
               )}
             </div>
-          </div>
-
-          <Separator />
-
-          <div className="space-y-2">
-            <h4 className="font-medium">Attendees ({meeting.attendees.length}/{meeting.maxAttendees})</h4>
-            <div className="space-y-2">
-              {meeting.attendees.map((attendee, index) => (
-                <div key={index} className="flex items-center space-x-2">
-                  <Avatar className="h-8 w-8">
-                    <AvatarImage src={attendee.avatar} alt={attendee.name} />
-                    <AvatarFallback>{attendee.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium">{attendee.name}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {attendee.role} at {attendee.company}
-                    </p>
-                  </div>
-                </div>
-              ))}
+            
+            <div>
+              <h4 className="font-medium mb-2">Tags</h4>
+              <div className="flex flex-wrap gap-1">
+                {meeting.tags.map((tag, index) => (
+                  <Badge key={index} variant="secondary">
+                    {tag}
+                  </Badge>
+                ))}
+              </div>
+            </div>
+            
+            <div>
+              <h4 className="font-medium mb-2">Attendees ({meetingConnections.length})</h4>
+              <div className="space-y-2">
+                {meetingConnections.length > 0 ? (
+                  meetingConnections.map((connection) => (
+                    <div key={connection.id} className="flex items-center justify-between p-2 border rounded">
+                      <div className="flex items-center space-x-3">
+                        <Avatar className="h-8 w-8">
+                          <AvatarImage src={connection.avatar} alt={connection.name} />
+                          <AvatarFallback>{connection.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <p className="text-sm font-medium">{connection.name}</p>
+                          <p className="text-xs text-muted-foreground">{connection.role} at {connection.company}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Badge className="bg-blue-100 text-blue-800" variant="secondary">
+                          {connection.role}
+                        </Badge>
+                        <Badge className={connection.status === 'connected' ? 'bg-green-100 text-green-800' : connection.status === 'pending' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'} variant="secondary">
+                          {connection.status}
+                        </Badge>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-sm text-muted-foreground">No attendees yet</p>
+                )}
+              </div>
             </div>
           </div>
-
-          <Separator />
-
-          <div className="space-y-2">
-            <h4 className="font-medium">Tags</h4>
-            <div className="flex flex-wrap gap-1">
-              {meeting.tags.map((tag) => (
-                <Badge key={tag} variant="secondary" className="text-xs">
-                  {tag}
-                </Badge>
-              ))}
-            </div>
-          </div>
-
+          
           <div className="flex space-x-2 pt-4">
             <Button className="flex-1">
-              <Video className="mr-2 h-4 w-4" />
+              <ExternalLink className="mr-2 h-4 w-4" />
               Join Meeting
             </Button>
             <Button variant="outline">
-              <ExternalLink className="h-4 w-4" />
+              <Calendar className="mr-2 h-4 w-4" />
+              Add to Calendar
             </Button>
           </div>
         </div>
@@ -381,36 +251,83 @@ function MeetingCard({ meeting }: { meeting: Meeting }) {
 
 export default function MeetingsPage() {
   const { user } = useAuth();
+  const { data: meetings, loading, error, refetch } = useMeetings();
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedStatus, setSelectedStatus] = useState('all');
   const [selectedType, setSelectedType] = useState('all');
 
-  const meetingTypes = Array.from(new Set(mockMeetings.map(meeting => meeting.type)));
+  const meetingTypes = meetings ? Array.from(new Set(meetings.map(meeting => meeting.type))) : [];
 
   // Sort meetings by date and status
   const sortMeetings = (meetings: Meeting[]) => {
     return meetings.sort((a, b) => {
-      // First sort by status priority: scheduled > ongoing > completed > cancelled
-      const statusPriority = { scheduled: 0, ongoing: 1, completed: 2, cancelled: 3 };
-      const statusDiff = statusPriority[a.status as keyof typeof statusPriority] - statusPriority[b.status as keyof typeof statusPriority];
+      // Sort by status priority first
+      const statusPriority = { confirmed: 1, pending: 2, completed: 3, cancelled: 4 };
+      const aPriority = statusPriority[a.status as keyof typeof statusPriority] || 5;
+      const bPriority = statusPriority[b.status as keyof typeof statusPriority] || 5;
       
-      if (statusDiff !== 0) return statusDiff;
+      if (aPriority !== bPriority) {
+        return aPriority - bPriority;
+      }
       
-      // Then sort by date (earliest first)
-      const dateA = new Date(a.date + ' ' + a.time);
-      const dateB = new Date(b.date + ' ' + b.time);
-      return dateA.getTime() - dateB.getTime();
+      // Then sort by date
+      return new Date(a.date).getTime() - new Date(b.date).getTime();
     });
   };
 
-  const filteredMeetings = mockMeetings.filter(meeting => {
+  const filteredMeetings = meetings ? meetings.filter(meeting => {
     const matchesSearch = meeting.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          meeting.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          meeting.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
+    const matchesStatus = selectedStatus === 'all' || meeting.status === selectedStatus;
     const matchesType = selectedType === 'all' || meeting.type === selectedType;
-    return matchesSearch && matchesType;
-  });
+    return matchesSearch && matchesStatus && matchesType;
+  }) : [];
 
   const sortedMeetings = sortMeetings(filteredMeetings);
+
+  if (loading) {
+    return (
+      <div className="p-6 space-y-6">
+        <div className="space-y-2">
+          <Skeleton className="h-8 w-64" />
+          <Skeleton className="h-4 w-96" />
+        </div>
+        <div className="flex flex-col sm:flex-row gap-4">
+          <Skeleton className="h-10 flex-1" />
+          <Skeleton className="h-10 w-[200px]" />
+        </div>
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <Skeleton key={i} className="h-48 w-full" />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-6 space-y-6">
+        <div className="space-y-2">
+          <h1 className="text-3xl font-bold tracking-tight">Meetings</h1>
+          <p className="text-muted-foreground">
+            Schedule and manage your meetings with mentors, investors, and peers
+          </p>
+        </div>
+        <Alert>
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription className="flex items-center justify-between">
+            <span>{error}</span>
+            <Button variant="outline" size="sm" onClick={refetch}>
+              <RefreshCw className="mr-2 h-4 w-4" />
+              Retry
+            </Button>
+          </AlertDescription>
+        </Alert>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 space-y-6">
@@ -460,8 +377,8 @@ export default function MeetingsPage() {
       <Tabs defaultValue="all" className="space-y-4">
         <TabsList>
           <TabsTrigger value="all">All Meetings</TabsTrigger>
-          <TabsTrigger value="scheduled">Scheduled</TabsTrigger>
-          <TabsTrigger value="ongoing">Ongoing</TabsTrigger>
+          <TabsTrigger value="confirmed">Confirmed</TabsTrigger>
+          <TabsTrigger value="pending">Pending</TabsTrigger>
           <TabsTrigger value="completed">Completed</TabsTrigger>
         </TabsList>
 
@@ -476,9 +393,9 @@ export default function MeetingsPage() {
           </div>
         </TabsContent>
 
-        <TabsContent value="scheduled" className="space-y-4">
+        <TabsContent value="confirmed" className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {sortMeetings(filteredMeetings.filter(m => m.status === 'scheduled')).map((meeting) => (
+            {sortMeetings(filteredMeetings.filter(m => m.status === 'confirmed')).map((meeting) => (
               <MeetingCard 
                 key={meeting.id} 
                 meeting={meeting} 
@@ -487,9 +404,9 @@ export default function MeetingsPage() {
           </div>
         </TabsContent>
 
-        <TabsContent value="ongoing" className="space-y-4">
+        <TabsContent value="pending" className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {sortMeetings(filteredMeetings.filter(m => m.status === 'ongoing')).map((meeting) => (
+            {sortMeetings(filteredMeetings.filter(m => m.status === 'pending')).map((meeting) => (
               <MeetingCard 
                 key={meeting.id} 
                 meeting={meeting} 

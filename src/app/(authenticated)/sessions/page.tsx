@@ -7,38 +7,25 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import {
-  Search,
   Calendar,
   Clock,
   Users,
-  MessageSquare,
-  Play,
+  MapPin,
+  Plus,
+  Search,
+  Filter,
   ExternalLink,
-  Filter
+  CheckCircle,
+  XCircle,
+  AlertCircle,
+  Star
 } from 'lucide-react';
-
-interface Session {
-  id: string;
-  title: string;
-  description: string;
-  type: 'workshop' | 'mentoring' | 'networking' | 'pitch';
-  status: 'upcoming' | 'ongoing' | 'completed';
-  date: string;
-  time: string;
-  duration: string;
-  mentor: {
-    name: string;
-    avatar: string;
-    company: string;
-  };
-  attendees: number;
-  maxAttendees: number;
-  tags: string[];
-}
+import { Session } from '@/data/types';
+import { sessions, getSessionConnections } from '@/data';
 
 // Helper functions
 const getStatusColor = (status: string) => {
@@ -61,91 +48,21 @@ const getTypeColor = (type: string) => {
     case 'mentoring':
       return 'bg-orange-100 text-orange-800';
     case 'networking':
-      return 'bg-pink-100 text-pink-800';
+      return 'bg-blue-100 text-blue-800';
     case 'pitch':
-      return 'bg-red-100 text-red-800';
+      return 'bg-green-100 text-green-800';
     default:
       return 'bg-gray-100 text-gray-800';
   }
 };
 
-const mockSessions: Session[] = [
-  {
-    id: '1',
-    title: 'Product Strategy Workshop',
-    description: 'Learn how to develop and execute a winning product strategy for your startup.',
-    type: 'workshop',
-    status: 'upcoming',
-    date: '2024-01-15',
-    time: '10:00 AM',
-    duration: '2 hours',
-    mentor: {
-      name: 'Sarah Chen',
-      avatar: '/avatars/sarah.jpg',
-      company: 'Product Strategy Inc.'
-    },
-    attendees: 12,
-    maxAttendees: 20,
-    tags: ['Product', 'Strategy', 'Workshop']
-  },
-  {
-    id: '2',
-    title: 'Investor Pitch Practice',
-    description: 'Practice your pitch with experienced investors and get valuable feedback.',
-    type: 'pitch',
-    status: 'ongoing',
-    date: '2024-01-12',
-    time: '2:00 PM',
-    duration: '1 hour',
-    mentor: {
-      name: 'Michael Rodriguez',
-      avatar: '/avatars/michael.jpg',
-      company: 'Venture Capital Partners'
-    },
-    attendees: 8,
-    maxAttendees: 10,
-    tags: ['Pitch', 'Investor', 'Practice']
-  },
-  {
-    id: '3',
-    title: 'Networking Mixer',
-    description: 'Connect with fellow founders, mentors, and investors in a casual setting.',
-    type: 'networking',
-    status: 'upcoming',
-    date: '2024-01-18',
-    time: '6:00 PM',
-    duration: '3 hours',
-    mentor: {
-      name: 'Emily Johnson',
-      avatar: '/avatars/emily.jpg',
-      company: 'Startup Community Hub'
-    },
-    attendees: 25,
-    maxAttendees: 50,
-    tags: ['Networking', 'Community', 'Social']
-  },
-  {
-    id: '4',
-    title: 'Technical Architecture Review',
-    description: 'Get expert advice on your technical architecture and scalability plans.',
-    type: 'mentoring',
-    status: 'completed',
-    date: '2024-01-10',
-    time: '11:00 AM',
-    duration: '1.5 hours',
-    mentor: {
-      name: 'David Kim',
-      avatar: '/avatars/david.jpg',
-      company: 'Tech Solutions LLC'
-    },
-    attendees: 1,
-    maxAttendees: 1,
-    tags: ['Technical', 'Architecture', 'Review']
-  }
-];
+// Cast the sessions data to the correct type
+const typedSessions = sessions as Session[];
 
 // Session Card Component
 function SessionCard({ session }: { session: Session }) {
+  const sessionConnections = getSessionConnections(session.id);
+
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -178,34 +95,39 @@ function SessionCard({ session }: { session: Session }) {
                 <Clock className="h-4 w-4" />
                 <span>{session.time}</span>
               </div>
-            </div>
-
-            <div className="flex items-center space-x-2">
-              <Avatar className="h-8 w-8">
-                <AvatarImage src={session.mentor.avatar} alt={session.mentor.name} />
-                <AvatarFallback>{session.mentor.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
-              </Avatar>
-              <div className="flex-1">
-                <p className="text-sm font-medium">{session.mentor.name}</p>
-                <p className="text-xs text-muted-foreground">{session.mentor.company}</p>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-end">
-              <div className="flex items-center space-x-1 text-sm text-muted-foreground">
+              <div className="flex items-center space-x-1">
                 <Users className="h-4 w-4" />
                 <span>{session.attendees}/{session.maxAttendees}</span>
               </div>
             </div>
+            
+            <div className="flex items-center space-x-3">
+              <Avatar className="h-8 w-8">
+                <AvatarImage src={session.mentor.avatar} alt={session.mentor.name} />
+                <AvatarFallback>{session.mentor.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+              </Avatar>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium truncate">{session.mentor.name}</p>
+                <p className="text-xs text-muted-foreground truncate">{session.mentor.company}</p>
+              </div>
+            </div>
+            
+            <div className="flex flex-wrap gap-1">
+              {session.tags.map((tag, index) => (
+                <Badge key={index} variant="secondary" className="text-xs">
+                  {tag}
+                </Badge>
+              ))}
+            </div>
           </CardContent>
         </Card>
       </SheetTrigger>
-      <SheetContent className="overflow-y-auto">
+      <SheetContent className="w-4/5 sm:max-w-md lg:max-w-lg xl:max-w-xl">
         <SheetHeader>
           <SheetTitle>{session.title}</SheetTitle>
           <SheetDescription>{session.description}</SheetDescription>
         </SheetHeader>
-        <div className="px-6 space-y-6 pb-6">
+        <div className="px-6 space-y-6 pt-6">
           <div className="flex items-center space-x-2">
             <Badge className={getTypeColor(session.type)}>
               {session.type}
@@ -217,48 +139,87 @@ function SessionCard({ session }: { session: Session }) {
           
           <Separator />
           
-          <div className="space-y-2">
-            <h4 className="font-medium">Session Details</h4>
-            <div className="grid grid-cols-2 gap-2 text-sm">
-              <div>Date: {session.date}</div>
-              <div>Time: {session.time}</div>
-              <div>Duration: {session.duration}</div>
-              <div>Attendees: {session.attendees}/{session.maxAttendees}</div>
-            </div>
-          </div>
-
-          <Separator />
-
-          <div className="space-y-2">
-            <h4 className="font-medium">Mentor</h4>
-            <div className="flex items-center space-x-2">
-              <Avatar>
-                <AvatarImage src={session.mentor.avatar} alt={session.mentor.name} />
-                <AvatarFallback>{session.mentor.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
-              </Avatar>
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
-                <p className="font-medium">{session.mentor.name}</p>
-                <p className="text-sm text-muted-foreground">{session.mentor.company}</p>
+                <span className="text-muted-foreground">Date:</span>
+                <p className="font-medium">{session.date}</p>
+              </div>
+              <div>
+                <span className="text-muted-foreground">Time:</span>
+                <p className="font-medium">{session.time}</p>
+              </div>
+              <div>
+                <span className="text-muted-foreground">Duration:</span>
+                <p className="font-medium">{session.duration}</p>
+              </div>
+              <div>
+                <span className="text-muted-foreground">Attendees:</span>
+                <p className="font-medium">{session.attendees}/{session.maxAttendees}</p>
+              </div>
+            </div>
+            
+            <div>
+              <h4 className="font-medium mb-2">Mentor</h4>
+              <div className="flex items-center space-x-3 p-3 border rounded-lg">
+                <Avatar className="h-12 w-12">
+                  <AvatarImage src={session.mentor.avatar} alt={session.mentor.name} />
+                  <AvatarFallback>{session.mentor.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                </Avatar>
+                <div>
+                  <p className="font-medium">{session.mentor.name}</p>
+                  <p className="text-sm text-muted-foreground">{session.mentor.company}</p>
+                </div>
+              </div>
+            </div>
+            
+            <div>
+              <h4 className="font-medium mb-2">Tags</h4>
+              <div className="flex flex-wrap gap-1">
+                {session.tags.map((tag, index) => (
+                  <Badge key={index} variant="secondary">
+                    {tag}
+                  </Badge>
+                ))}
+              </div>
+            </div>
+            
+            <div>
+              <h4 className="font-medium mb-2">Participants ({sessionConnections.length})</h4>
+              <div className="space-y-2">
+                {sessionConnections.length > 0 ? (
+                  sessionConnections.map((connection) => (
+                    <div key={connection.id} className="flex items-center justify-between p-2 border rounded">
+                      <div className="flex items-center space-x-3">
+                        <Avatar className="h-8 w-8">
+                          <AvatarImage src={connection.avatar} alt={connection.name} />
+                          <AvatarFallback>{connection.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <p className="text-sm font-medium">{connection.name}</p>
+                          <p className="text-xs text-muted-foreground">{connection.role} at {connection.company}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Badge className="bg-blue-100 text-blue-800" variant="secondary">
+                          {connection.role}
+                        </Badge>
+                        <Badge className={connection.status === 'confirmed' ? 'bg-green-100 text-green-800' : connection.status === 'pending' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'} variant="secondary">
+                          {connection.status}
+                        </Badge>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-sm text-muted-foreground">No participants yet</p>
+                )}
               </div>
             </div>
           </div>
-
-          <Separator />
-
-          <div className="space-y-2">
-            <h4 className="font-medium">Tags</h4>
-            <div className="flex flex-wrap gap-1">
-              {session.tags.map((tag) => (
-                <Badge key={tag} variant="secondary" className="text-xs">
-                  {tag}
-                </Badge>
-              ))}
-            </div>
-          </div>
-
+          
           <div className="flex space-x-2 pt-4">
             <Button className="flex-1">
-              <Play className="mr-2 h-4 w-4" />
+              <Plus className="mr-2 h-4 w-4" />
               Join Session
             </Button>
             <Button variant="outline">
@@ -273,32 +234,85 @@ function SessionCard({ session }: { session: Session }) {
 
 export default function SessionsPage() {
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedMentor, setSelectedMentor] = useState('all');
+  const [selectedStatus, setSelectedStatus] = useState('all');
+  const [selectedType, setSelectedType] = useState('all');
+  const [sortBy, setSortBy] = useState('date-asc');
 
-  const mentors = Array.from(new Set(mockSessions.map(session => session.mentor.name)));
+  const mentors = Array.from(new Set(typedSessions.map(session => session.mentor.name)));
+  const sessionTypes = Array.from(new Set(typedSessions.map(session => session.type)));
 
-  // Sort sessions by date and status
+  // Enhanced sort sessions function
   const sortSessions = (sessions: Session[]) => {
     return sessions.sort((a, b) => {
-      // First sort by status priority: upcoming > ongoing > completed
-      const statusPriority = { upcoming: 0, ongoing: 1, completed: 2 };
-      const statusDiff = statusPriority[a.status as keyof typeof statusPriority] - statusPriority[b.status as keyof typeof statusPriority];
-      
-      if (statusDiff !== 0) return statusDiff;
-      
-      // Then sort by date (earliest first)
-      const dateA = new Date(a.date + ' ' + a.time);
-      const dateB = new Date(b.date + ' ' + b.time);
-      return dateA.getTime() - dateB.getTime();
+      switch (sortBy) {
+        case 'date-asc':
+          // Sort by date (earliest first)
+          const dateA = new Date(a.date + ' ' + a.time);
+          const dateB = new Date(b.date + ' ' + b.time);
+          return dateA.getTime() - dateB.getTime();
+        
+        case 'date-desc':
+          // Sort by date (latest first)
+          const dateC = new Date(a.date + ' ' + a.time);
+          const dateD = new Date(b.date + ' ' + b.time);
+          return dateD.getTime() - dateC.getTime();
+        
+        case 'status':
+          // Sort by status priority: upcoming > ongoing > completed
+          const statusPriority = { upcoming: 0, ongoing: 1, completed: 2 };
+          const statusDiff = statusPriority[a.status as keyof typeof statusPriority] - statusPriority[b.status as keyof typeof statusPriority];
+          if (statusDiff !== 0) return statusDiff;
+          // If same status, sort by date
+          const dateE = new Date(a.date + ' ' + a.time);
+          const dateF = new Date(b.date + ' ' + b.time);
+          return dateE.getTime() - dateF.getTime();
+        
+        case 'type':
+          // Sort by type alphabetically
+          const typeDiff = a.type.localeCompare(b.type);
+          if (typeDiff !== 0) return typeDiff;
+          // If same type, sort by date
+          const dateG = new Date(a.date + ' ' + a.time);
+          const dateH = new Date(b.date + ' ' + b.time);
+          return dateG.getTime() - dateH.getTime();
+        
+        case 'mentor':
+          // Sort by mentor name alphabetically
+          const mentorDiff = a.mentor.name.localeCompare(b.mentor.name);
+          if (mentorDiff !== 0) return mentorDiff;
+          // If same mentor, sort by date
+          const dateI = new Date(a.date + ' ' + a.time);
+          const dateJ = new Date(b.date + ' ' + b.time);
+          return dateI.getTime() - dateJ.getTime();
+        
+        case 'title':
+          // Sort by title alphabetically
+          const titleDiff = a.title.localeCompare(b.title);
+          if (titleDiff !== 0) return titleDiff;
+          // If same title, sort by date
+          const dateK = new Date(a.date + ' ' + a.time);
+          const dateL = new Date(b.date + ' ' + b.time);
+          return dateK.getTime() - dateL.getTime();
+        
+        default:
+          // Default: sort by status priority then date
+          const statusPriorityDefault = { upcoming: 0, ongoing: 1, completed: 2 };
+          const statusDiffDefault = statusPriorityDefault[a.status as keyof typeof statusPriorityDefault] - statusPriorityDefault[b.status as keyof typeof statusPriorityDefault];
+          if (statusDiffDefault !== 0) return statusDiffDefault;
+          const dateM = new Date(a.date + ' ' + a.time);
+          const dateN = new Date(b.date + ' ' + b.time);
+          return dateM.getTime() - dateN.getTime();
+      }
     });
   };
 
-  const filteredSessions = mockSessions.filter(session => {
+  const filteredSessions = typedSessions.filter(session => {
     const matchesSearch = session.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          session.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          session.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
-    const matchesMentor = selectedMentor === 'all' || session.mentor.name === selectedMentor;
-    return matchesSearch && matchesMentor;
+    const matchesStatus = selectedStatus === 'all' || session.status === selectedStatus;
+    const matchesType = selectedType === 'all' || session.type === selectedType;
+    return matchesSearch && matchesStatus && matchesType;
   });
 
   const sortedSessions = sortSessions(filteredSessions);
@@ -313,7 +327,7 @@ export default function SessionsPage() {
         </p>
       </div>
 
-      {/* Filters */}
+      {/* Filters and Sort */}
       <div className="flex flex-col sm:flex-row gap-4">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
@@ -324,17 +338,41 @@ export default function SessionsPage() {
             className="pl-10"
           />
         </div>
-        <Select value={selectedMentor} onValueChange={setSelectedMentor}>
+        <Select value={selectedType} onValueChange={setSelectedType}>
           <SelectTrigger className="w-full sm:w-[200px]">
-            <SelectValue placeholder="Filter by mentor" />
+            <SelectValue placeholder="Filter by type" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Mentors</SelectItem>
-            {mentors.map((mentor) => (
-              <SelectItem key={mentor} value={mentor}>
-                {mentor}
+            <SelectItem value="all">All Types</SelectItem>
+            {sessionTypes.map((type) => (
+              <SelectItem key={type} value={type}>
+                {type.charAt(0).toUpperCase() + type.slice(1)}
               </SelectItem>
             ))}
+          </SelectContent>
+        </Select>
+        <Select value={selectedStatus} onValueChange={setSelectedStatus}>
+          <SelectTrigger className="w-full sm:w-[200px]">
+            <SelectValue placeholder="Filter by status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Statuses</SelectItem>
+            <SelectItem value="upcoming">Upcoming</SelectItem>
+            <SelectItem value="ongoing">Ongoing</SelectItem>
+            <SelectItem value="completed">Completed</SelectItem>
+          </SelectContent>
+        </Select>
+        <Select value={sortBy} onValueChange={setSortBy}>
+          <SelectTrigger className="w-full sm:w-[200px]">
+            <SelectValue placeholder="Sort by" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="date-asc">Date (Earliest First)</SelectItem>
+            <SelectItem value="date-desc">Date (Latest First)</SelectItem>
+            <SelectItem value="status">Status</SelectItem>
+            <SelectItem value="type">Type</SelectItem>
+            <SelectItem value="mentor">Mentor</SelectItem>
+            <SelectItem value="title">Title</SelectItem>
           </SelectContent>
         </Select>
       </div>

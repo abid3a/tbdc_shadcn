@@ -11,149 +11,35 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 import {
-  Users,
-  Settings,
-  Shield,
-  Activity,
-  AlertTriangle,
-  CheckCircle,
-  Clock,
-  MoreHorizontal,
-  Plus,
   Search,
   Filter,
-  Download,
-  Eye,
-  Edit,
-  Trash2
+  Plus,
+  Users,
+  Shield,
+  AlertTriangle,
+  CheckCircle,
+  XCircle,
+  Info,
+  Clock,
+  Calendar,
+  Mail,
+  Phone,
+  Settings,
+  Activity
 } from 'lucide-react';
+import { User, SystemAlert } from '@/data/types';
+import { admin } from '@/data';
 
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  role: 'admin' | 'founder' | 'mentor' | 'partner';
-  status: 'active' | 'inactive' | 'pending';
-  avatar: string;
-  lastActive: string;
-  joinedDate: string;
-  sessions: number;
-  meetings: number;
-}
-
-interface SystemAlert {
-  id: string;
-  type: 'info' | 'warning' | 'error' | 'success';
-  title: string;
-  message: string;
-  timestamp: string;
-  status: 'active' | 'resolved';
-}
-
-const mockUsers: User[] = [
-  {
-    id: '1',
-    name: 'Sarah Chen',
-    email: 'sarah@productstrategy.com',
-    role: 'mentor',
-    status: 'active',
-    avatar: '/avatars/sarah.jpg',
-    lastActive: '2 hours ago',
-    joinedDate: '2023-01-15',
-    sessions: 24,
-    meetings: 18
-  },
-  {
-    id: '2',
-    name: 'Michael Rodriguez',
-    email: 'michael@vcpartners.com',
-    role: 'partner',
-    status: 'active',
-    avatar: '/avatars/michael.jpg',
-    lastActive: '1 day ago',
-    joinedDate: '2023-02-20',
-    sessions: 18,
-    meetings: 25
-  },
-  {
-    id: '3',
-    name: 'David Kim',
-    email: 'david@techsolutions.com',
-    role: 'mentor',
-    status: 'active',
-    avatar: '/avatars/david.jpg',
-    lastActive: '3 hours ago',
-    joinedDate: '2023-03-10',
-    sessions: 22,
-    meetings: 15
-  },
-  {
-    id: '4',
-    name: 'Emily Johnson',
-    email: 'emily@communityhub.com',
-    role: 'founder',
-    status: 'pending',
-    avatar: '/avatars/emily.jpg',
-    lastActive: 'Never',
-    joinedDate: '2024-01-05',
-    sessions: 0,
-    meetings: 0
-  },
-  {
-    id: '5',
-    name: 'Alex Thompson',
-    email: 'alex@innovatelabs.com',
-    role: 'founder',
-    status: 'inactive',
-    avatar: '/avatars/alex.jpg',
-    lastActive: '2 weeks ago',
-    joinedDate: '2023-06-15',
-    sessions: 8,
-    meetings: 5
-  }
-];
-
-const mockSystemAlerts: SystemAlert[] = [
-  {
-    id: '1',
-    type: 'warning',
-    title: 'High Server Load',
-    message: 'Server CPU usage is at 85%. Consider scaling up resources.',
-    timestamp: '2 hours ago',
-    status: 'active'
-  },
-  {
-    id: '2',
-    type: 'info',
-    title: 'System Maintenance',
-    message: 'Scheduled maintenance completed successfully.',
-    timestamp: '1 day ago',
-    status: 'resolved'
-  },
-  {
-    id: '3',
-    type: 'error',
-    title: 'Database Connection Issue',
-    message: 'Database connection timeout detected. Investigating...',
-    timestamp: '3 hours ago',
-    status: 'active'
-  },
-  {
-    id: '4',
-    type: 'success',
-    title: 'Backup Completed',
-    message: 'Daily backup completed successfully.',
-    timestamp: '6 hours ago',
-    status: 'resolved'
-  }
-];
+// Cast the admin data to the correct type
+const typedUsers = admin.users as User[];
+const typedSystemAlerts = admin.systemAlerts as SystemAlert[];
 
 export default function AdminPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedRole, setSelectedRole] = useState('all');
   const [selectedStatus, setSelectedStatus] = useState('all');
 
-  const filteredUsers = mockUsers.filter(user => {
+  const filteredUsers = typedUsers.filter(user => {
     const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          user.email.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesRole = selectedRole === 'all' || user.role === selectedRole;
@@ -181,7 +67,7 @@ export default function AdminPage() {
       case 'active':
         return 'bg-green-100 text-green-800';
       case 'inactive':
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-red-100 text-red-800';
       case 'pending':
         return 'bg-yellow-100 text-yellow-800';
       default:
@@ -192,15 +78,15 @@ export default function AdminPage() {
   const getAlertIcon = (type: string) => {
     switch (type) {
       case 'info':
-        return <Activity className="h-4 w-4 text-blue-600" />;
+        return <Info className="h-4 w-4" />;
       case 'warning':
-        return <AlertTriangle className="h-4 w-4 text-yellow-600" />;
+        return <AlertTriangle className="h-4 w-4" />;
       case 'error':
-        return <AlertTriangle className="h-4 w-4 text-red-600" />;
+        return <XCircle className="h-4 w-4" />;
       case 'success':
-        return <CheckCircle className="h-4 w-4 text-green-600" />;
+        return <CheckCircle className="h-4 w-4" />;
       default:
-        return <Activity className="h-4 w-4 text-gray-600" />;
+        return <Info className="h-4 w-4" />;
     }
   };
 
@@ -216,7 +102,7 @@ export default function AdminPage() {
         </div>
         <div className="flex items-center space-x-2">
           <Button variant="outline">
-            <Download className="mr-2 h-4 w-4" />
+            {/* <Download className="mr-2 h-4 w-4" /> */}
             Export Data
           </Button>
           <Button>
@@ -373,13 +259,13 @@ export default function AdminPage() {
                       <TableCell>
                         <div className="flex items-center space-x-2">
                           <Button variant="ghost" size="sm">
-                            <Eye className="h-4 w-4" />
+                            {/* <Eye className="h-4 w-4" /> */}
                           </Button>
                           <Button variant="ghost" size="sm">
-                            <Edit className="h-4 w-4" />
+                            {/* <Edit className="h-4 w-4" /> */}
                           </Button>
                           <Button variant="ghost" size="sm">
-                            <MoreHorizontal className="h-4 w-4" />
+                            {/* <MoreHorizontal className="h-4 w-4" /> */}
                           </Button>
                         </div>
                       </TableCell>
@@ -401,7 +287,7 @@ export default function AdminPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {mockSystemAlerts.map((alert) => (
+                  {typedSystemAlerts.map((alert) => (
                     <div key={alert.id} className="flex items-start space-x-3 p-3 border rounded-lg">
                       {getAlertIcon(alert.type)}
                       <div className="flex-1 space-y-1">

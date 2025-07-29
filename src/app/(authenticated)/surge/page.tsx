@@ -27,149 +27,8 @@ import {
   MapPin,
   Star
 } from 'lucide-react';
-
-interface SurgeRequest {
-  id: string;
-  title: string;
-  description: string;
-  priority: 'low' | 'medium' | 'high' | 'critical';
-  category: 'technical' | 'business' | 'legal' | 'financial' | 'marketing' | 'other';
-  status: 'open' | 'in-progress' | 'resolved' | 'closed';
-  requester: {
-    name: string;
-    avatar: string;
-    company: string;
-  };
-  assignedTo?: {
-    name: string;
-    avatar: string;
-    role: string;
-  };
-  createdAt: string;
-  updatedAt: string;
-  urgency: string;
-  tags: string[];
-}
-
-const mockSurgeRequests: SurgeRequest[] = [
-  {
-    id: '1',
-    title: 'Critical Server Downtime',
-    description: 'Production server is down, affecting all customer-facing services. Need immediate technical assistance.',
-    priority: 'critical',
-    category: 'technical',
-    status: 'in-progress',
-    requester: {
-      name: 'Alex Johnson',
-      avatar: '/avatars/alex.jpg',
-      company: 'TechStart Inc.'
-    },
-    assignedTo: {
-      name: 'David Kim',
-      avatar: '/avatars/david.jpg',
-      role: 'Technical Mentor'
-    },
-    createdAt: '2 hours ago',
-    updatedAt: '30 minutes ago',
-    urgency: 'Immediate',
-    tags: ['Server', 'Downtime', 'Production']
-  },
-  {
-    id: '2',
-    title: 'Investor Meeting Crisis',
-    description: 'Major investor meeting tomorrow, need help with pitch deck and financial projections.',
-    priority: 'high',
-    category: 'business',
-    status: 'open',
-    requester: {
-      name: 'Sarah Chen',
-      avatar: '/avatars/sarah.jpg',
-      company: 'Product Strategy Inc.'
-    },
-    createdAt: '4 hours ago',
-    updatedAt: '4 hours ago',
-    urgency: 'Today',
-    tags: ['Investor', 'Pitch', 'Financial']
-  },
-  {
-    id: '3',
-    title: 'Legal Contract Review',
-    description: 'Urgent contract review needed for partnership agreement. Deadline is end of day.',
-    priority: 'high',
-    category: 'legal',
-    status: 'open',
-    requester: {
-      name: 'Michael Rodriguez',
-      avatar: '/avatars/michael.jpg',
-      company: 'Venture Capital Partners'
-    },
-    createdAt: '6 hours ago',
-    updatedAt: '6 hours ago',
-    urgency: 'End of Day',
-    tags: ['Legal', 'Contract', 'Partnership']
-  },
-  {
-    id: '4',
-    title: 'Marketing Campaign Launch',
-    description: 'Product launch marketing campaign needs immediate review and optimization.',
-    priority: 'medium',
-    category: 'marketing',
-    status: 'resolved',
-    requester: {
-      name: 'Emily Johnson',
-      avatar: '/avatars/emily.jpg',
-      company: 'Startup Community Hub'
-    },
-    assignedTo: {
-      name: 'Lisa Wang',
-      avatar: '/avatars/lisa.jpg',
-      role: 'Marketing Mentor'
-    },
-    createdAt: '1 day ago',
-    updatedAt: '2 hours ago',
-    urgency: 'This Week',
-    tags: ['Marketing', 'Launch', 'Campaign']
-  }
-];
-
-const mockAvailableMentors = [
-  {
-    name: 'David Kim',
-    avatar: '/avatars/david.jpg',
-    role: 'Technical Mentor',
-    expertise: ['Backend', 'DevOps', 'Architecture'],
-    availability: 'Available',
-    rating: 4.9,
-    responseTime: '5 min'
-  },
-  {
-    name: 'Sarah Chen',
-    avatar: '/avatars/sarah.jpg',
-    role: 'Product Mentor',
-    expertise: ['Product Strategy', 'User Research', 'Roadmapping'],
-    availability: 'Available',
-    rating: 4.8,
-    responseTime: '10 min'
-  },
-  {
-    name: 'Michael Rodriguez',
-    avatar: '/avatars/michael.jpg',
-    role: 'Business Mentor',
-    expertise: ['Fundraising', 'Business Model', 'Strategy'],
-    availability: 'Available',
-    rating: 4.7,
-    responseTime: '15 min'
-  },
-  {
-    name: 'Lisa Wang',
-    avatar: '/avatars/lisa.jpg',
-    role: 'Marketing Mentor',
-    expertise: ['Growth Marketing', 'Branding', 'Customer Acquisition'],
-    availability: 'Busy',
-    rating: 4.6,
-    responseTime: '30 min'
-  }
-];
+import { SurgeRequest, Mentor } from '@/data/types';
+import { surge } from '@/data';
 
 export default function SurgePage() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -177,7 +36,7 @@ export default function SurgePage() {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [showNewRequest, setShowNewRequest] = useState(false);
 
-  const filteredRequests = mockSurgeRequests.filter(request => {
+  const filteredRequests = surge.surgeRequests.filter(request => {
     const matchesSearch = request.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          request.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          request.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
@@ -300,6 +159,7 @@ export default function SurgePage() {
         <TabsList>
           <TabsTrigger value="requests">Active Requests</TabsTrigger>
           <TabsTrigger value="mentors">Available Mentors</TabsTrigger>
+          <TabsTrigger value="bookings">My Bookings</TabsTrigger>
           <TabsTrigger value="history">Request History</TabsTrigger>
         </TabsList>
 
@@ -426,8 +286,42 @@ export default function SurgePage() {
         </TabsContent>
 
         <TabsContent value="mentors" className="space-y-4">
+          {/* Mentor Discovery Filters */}
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search mentors by name, expertise, or industry..."
+                className="pl-10"
+              />
+            </div>
+            <Select>
+              <SelectTrigger className="w-full sm:w-[200px]">
+                <SelectValue placeholder="Filter by expertise" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Expertise</SelectItem>
+                <SelectItem value="technical">Technical</SelectItem>
+                <SelectItem value="business">Business</SelectItem>
+                <SelectItem value="marketing">Marketing</SelectItem>
+                <SelectItem value="finance">Finance</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select>
+              <SelectTrigger className="w-full sm:w-[200px]">
+                <SelectValue placeholder="Filter by availability" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Availability</SelectItem>
+                <SelectItem value="available">Available Now</SelectItem>
+                <SelectItem value="today">Available Today</SelectItem>
+                <SelectItem value="week">Available This Week</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {mockAvailableMentors.map((mentor, index) => (
+            {surge.availableMentors.map((mentor, index) => (
               <Card key={index} className="hover:shadow-md transition-shadow">
                 <CardHeader>
                   <div className="flex items-start space-x-4">
@@ -468,14 +362,63 @@ export default function SurgePage() {
                       <p className="text-muted-foreground">{mentor.responseTime}</p>
                     </div>
                     <Button size="sm">
-                      <MessageSquare className="mr-2 h-4 w-4" />
-                      Contact
+                      <Calendar className="mr-2 h-4 w-4" />
+                      Book Now
                     </Button>
                   </div>
                 </CardContent>
               </Card>
             ))}
           </div>
+        </TabsContent>
+
+        <TabsContent value="bookings" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>My Bookings</CardTitle>
+              <CardDescription>Upcoming and past mentor bookings</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between p-4 border rounded-lg">
+                  <div className="flex items-center space-x-4">
+                    <Avatar className="h-10 w-10">
+                      <AvatarImage src="/avatars/david.jpg" alt="David Kim" />
+                      <AvatarFallback>DK</AvatarFallback>
+                    </Avatar>
+                    <div className="space-y-1">
+                      <p className="font-medium">Technical Architecture Review</p>
+                      <p className="text-sm text-muted-foreground">David Kim • Tomorrow at 2:00 PM</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Badge className="bg-blue-100 text-blue-800">Upcoming</Badge>
+                    <Button variant="ghost" size="sm">
+                      <Calendar className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between p-4 border rounded-lg">
+                  <div className="flex items-center space-x-4">
+                    <Avatar className="h-10 w-10">
+                      <AvatarImage src="/avatars/sarah.jpg" alt="Sarah Chen" />
+                      <AvatarFallback>SC</AvatarFallback>
+                    </Avatar>
+                    <div className="space-y-1">
+                      <p className="font-medium">Product Strategy Session</p>
+                      <p className="text-sm text-muted-foreground">Sarah Chen • 2 days ago</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Badge className="bg-green-100 text-green-800">Completed</Badge>
+                    <Button variant="ghost" size="sm">
+                      <Eye className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </TabsContent>
 
         <TabsContent value="history" className="space-y-4">
@@ -486,7 +429,7 @@ export default function SurgePage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {mockSurgeRequests.filter(r => r.status === 'resolved' || r.status === 'closed').map((request) => (
+                {surge.surgeRequests.filter(r => r.status === 'resolved' || r.status === 'closed').map((request) => (
                   <div key={request.id} className="flex items-center justify-between p-4 border rounded-lg">
                     <div className="flex items-center space-x-4">
                       <div className="space-y-1">

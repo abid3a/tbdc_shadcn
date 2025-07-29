@@ -6,155 +6,31 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 import {
-  BarChart3,
-  TrendingUp,
+  Calendar,
   Users,
   DollarSign,
-  Calendar,
   Target,
+  Clock,
+  Award,
+  TrendingUp,
+  TrendingDown,
+  Minus,
   Download,
   Filter,
+  BarChart3,
   PieChart,
-  Activity,
-  Award,
-  Clock
+  Activity
 } from 'lucide-react';
+import { Metric, ReportData, TopPerformer } from '@/data/types';
+import { reports } from '@/data';
 
-interface Metric {
-  label: string;
-  value: string;
-  change: string;
-  trend: 'up' | 'down' | 'neutral';
-  icon: React.ComponentType<{ className?: string }>;
-}
-
-interface ReportData {
-  period: string;
-  sessions: number;
-  meetings: number;
-  connections: number;
-  companies: number;
-  revenue: string;
-  growth: string;
-}
-
-const mockMetrics: Metric[] = [
-  {
-    label: 'Total Sessions',
-    value: '156',
-    change: '+12%',
-    trend: 'up',
-    icon: Calendar
-  },
-  {
-    label: 'Active Users',
-    value: '2,847',
-    change: '+8%',
-    trend: 'up',
-    icon: Users
-  },
-  {
-    label: 'Revenue Generated',
-    value: '$1.2M',
-    change: '+23%',
-    trend: 'up',
-    icon: DollarSign
-  },
-  {
-    label: 'Success Rate',
-    value: '84%',
-    change: '+5%',
-    trend: 'up',
-    icon: Target
-  },
-  {
-    label: 'Avg Session Duration',
-    value: '45 min',
-    change: '-2%',
-    trend: 'down',
-    icon: Clock
-  },
-  {
-    label: 'Mentor Satisfaction',
-    value: '4.8/5',
-    change: '+0.2',
-    trend: 'up',
-    icon: Award
-  }
-];
-
-const mockReportData: ReportData[] = [
-  {
-    period: 'Q1 2024',
-    sessions: 45,
-    meetings: 89,
-    connections: 234,
-    companies: 12,
-    revenue: '$320K',
-    growth: '+15%'
-  },
-  {
-    period: 'Q4 2023',
-    sessions: 38,
-    meetings: 76,
-    connections: 198,
-    companies: 10,
-    revenue: '$280K',
-    growth: '+12%'
-  },
-  {
-    period: 'Q3 2023',
-    sessions: 32,
-    meetings: 65,
-    connections: 167,
-    companies: 8,
-    revenue: '$250K',
-    growth: '+8%'
-  },
-  {
-    period: 'Q2 2023',
-    sessions: 28,
-    meetings: 54,
-    connections: 145,
-    companies: 7,
-    revenue: '$230K',
-    growth: '+5%'
-  }
-];
-
-const mockTopPerformers = [
-  {
-    name: 'Sarah Chen',
-    role: 'Product Mentor',
-    sessions: 24,
-    rating: 4.9,
-    impact: 'High'
-  },
-  {
-    name: 'Michael Rodriguez',
-    role: 'Investor',
-    meetings: 18,
-    rating: 4.8,
-    impact: 'High'
-  },
-  {
-    name: 'David Kim',
-    role: 'Technical Mentor',
-    sessions: 22,
-    rating: 4.7,
-    impact: 'Medium'
-  },
-  {
-    name: 'Emily Johnson',
-    role: 'Community Builder',
-    sessions: 19,
-    rating: 4.6,
-    impact: 'Medium'
-  }
-];
+// Cast the reports data to the correct type
+const typedMetrics = reports.metrics as Metric[];
+const typedReportData = reports.reportData as ReportData[];
+const typedTopPerformers = reports.topPerformers as TopPerformer[];
 
 export default function ReportsPage() {
   const [selectedPeriod, setSelectedPeriod] = useState('q1-2024');
@@ -176,9 +52,9 @@ export default function ReportsPage() {
       case 'up':
         return <TrendingUp className="h-4 w-4" />;
       case 'down':
-        return <TrendingUp className="h-4 w-4 rotate-180" />;
+        return <TrendingDown className="h-4 w-4" />;
       default:
-        return <Activity className="h-4 w-4" />;
+        return <Minus className="h-4 w-4" />;
     }
   };
 
@@ -189,7 +65,7 @@ export default function ReportsPage() {
       case 'Medium':
         return 'bg-yellow-100 text-yellow-800';
       case 'Low':
-        return 'bg-red-100 text-red-800';
+        return 'bg-gray-100 text-gray-800';
       default:
         return 'bg-gray-100 text-gray-800';
     }
@@ -226,7 +102,7 @@ export default function ReportsPage() {
 
       {/* Key Metrics */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {mockMetrics.map((metric, index) => {
+        {typedMetrics.map((metric, index) => {
           const Icon = metric.icon;
           return (
             <Card key={index}>
@@ -275,7 +151,7 @@ export default function ReportsPage() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {mockReportData.map((data, index) => (
+                    {typedReportData.map((data, index) => (
                       <TableRow key={index}>
                         <TableCell className="font-medium">{data.period}</TableCell>
                         <TableCell>{data.sessions}</TableCell>
@@ -297,7 +173,7 @@ export default function ReportsPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {mockTopPerformers.map((performer, index) => (
+                  {typedTopPerformers.map((performer, index) => (
                     <div key={index} className="flex items-center justify-between">
                       <div className="flex items-center space-x-3">
                         <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-primary-foreground text-sm font-medium">

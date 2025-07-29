@@ -1,0 +1,128 @@
+{
+  "meetings": [
+    {
+      "id": "1",
+      "title": "Product Strategy Discussion",
+      "description": "Deep dive into product roadmap and strategic planning for Q1.",
+      "type": "internal",
+      "status": "confirmed",
+      "date": "2024-01-15",
+      "time": "10:00 AM",
+      "duration": "1 hour",
+      "format": "video",
+      "meetingUrl": "https://meet.google.com/abc-defg-hij",
+      "attendees": [
+        {
+          "name": "Sarah Chen",
+          "avatar": "/avatars/sarah.jpg",
+          "role": "Product Mentor",
+          "company": "Product Strategy Inc."
+        },
+        {
+          "name": "Demo Founder",
+          "avatar": "/avatars/founder.jpg",
+          "role": "Founder",
+          "company": "TechStart Inc."
+        }
+      ],
+      "maxAttendees": 2,
+      "tags": ["Product", "Strategy", "Planning"]
+    },
+    {
+      "id": "2",
+      "title": "Investor Pitch Review",
+      "description": "Practice pitch presentation and receive feedback from investors.",
+      "type": "investor",
+      "status": "confirmed",
+      "date": "2024-01-16",
+      "time": "2:00 PM",
+      "duration": "1.5 hours",
+      "format": "video",
+      "meetingUrl": "https://zoom.us/j/123456789",
+      "attendees": [
+        {
+          "name": "Michael Rodriguez",
+          "avatar": "/avatars/michael.jpg",
+          "role": "Investor",
+          "company": "Venture Capital Partners"
+        },
+        {
+          "name": "Emily Johnson",
+          "avatar": "/avatars/emily.jpg",
+          "role": "Investor",
+          "company": "Startup Ventures"
+        },
+        {
+          "name": "Demo Founder",
+          "avatar": "/avatars/founder.jpg",
+          "role": "Founder",
+          "company": "TechStart Inc."
+        }
+      ],
+      "maxAttendees": 5,
+      "tags": ["Pitch", "Investment", "Presentation"]
+    },
+    {
+      "id": "3",
+      "title": "Technical Architecture Review",
+      "description": "Review technical architecture and discuss scalability plans.",
+      "type": "eir",
+      "status": "confirmed",
+      "date": "2024-01-12",
+      "time": "11:00 AM",
+      "duration": "2 hours",
+      "format": "video",
+      "meetingUrl": "https://teams.microsoft.com/l/meetup-join/123",
+      "attendees": [
+        {
+          "name": "David Kim",
+          "avatar": "/avatars/david.jpg",
+          "role": "Technical Mentor",
+          "company": "Tech Solutions LLC"
+        },
+        {
+          "name": "Demo Founder",
+          "avatar": "/avatars/founder.jpg",
+          "role": "Founder",
+          "company": "TechStart Inc."
+        }
+      ],
+      "maxAttendees": 2,
+      "tags": ["Technical", "Architecture", "Scalability"]
+    },
+    {
+      "id": "4",
+      "title": "Customer Feedback Session",
+      "description": "Connect with customers to gather feedback and insights.",
+      "type": "customer",
+      "status": "pending",
+      "date": "2024-01-18",
+      "time": "6:00 PM",
+      "duration": "2 hours",
+      "format": "in-person",
+      "location": "TBDC Office, Downtown",
+      "attendees": [
+        {
+          "name": "Demo Founder",
+          "avatar": "/avatars/founder.jpg",
+          "role": "Founder",
+          "company": "TechStart Inc."
+        },
+        {
+          "name": "Alex Thompson",
+          "avatar": "/avatars/alex.jpg",
+          "role": "Customer",
+          "company": "Enterprise Corp"
+        },
+        {
+          "name": "Lisa Wang",
+          "avatar": "/avatars/lisa.jpg",
+          "role": "Customer",
+          "company": "Startup Solutions"
+        }
+      ],
+      "maxAttendees": 20,
+      "tags": ["Customer", "Feedback", "Insights"]
+    }
+  ]
+}
