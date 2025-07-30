@@ -425,7 +425,7 @@ export default function MentorDetailPage() {
                       <div className="text-sm">
                         <span className="text-muted-foreground">Total:</span>
                         <span className="font-semibold ml-1">
-                          ${durationOptions.find(opt => opt.value === sessionDuration)?.label.split(' - ')[1] || '250'}
+                          ${durationOptions.find(opt => opt.value === sessionDuration)?.label.split(' - ')[1]?.replace('$', '') || '250'}
                         </span>
                       </div>
                       <Button onClick={handleBooking} disabled={!selectedDate || !selectedTime}>

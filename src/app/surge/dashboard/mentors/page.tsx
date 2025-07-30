@@ -210,39 +210,41 @@ export default function MentorsPage() {
             </div>
 
             {/* Filters */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <Select value={selectedExpertise} onValueChange={setSelectedExpertise}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Filter by expertise" />
-                </SelectTrigger>
-                <SelectContent>
-                  {expertiseOptions.map((option) => (
-                    <SelectItem key={option} value={option}>{option}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+            <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <Select value={selectedExpertise} onValueChange={setSelectedExpertise}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Filter by expertise" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {expertiseOptions.map((option) => (
+                      <SelectItem key={option} value={option}>{option}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
 
-              <Select value={selectedAvailability} onValueChange={setSelectedAvailability}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Filter by availability" />
-                </SelectTrigger>
-                <SelectContent>
-                  {availabilityOptions.map((option) => (
-                    <SelectItem key={option} value={option}>{option}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                <Select value={selectedAvailability} onValueChange={setSelectedAvailability}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Filter by availability" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {availabilityOptions.map((option) => (
+                      <SelectItem key={option} value={option}>{option}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
 
-              <Select value={selectedType} onValueChange={setSelectedType}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Filter by type" />
-                </SelectTrigger>
-                <SelectContent>
-                  {typeOptions.map((option) => (
-                    <SelectItem key={option} value={option}>{option}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                <Select value={selectedType} onValueChange={setSelectedType}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Filter by type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {typeOptions.map((option) => (
+                      <SelectItem key={option} value={option}>{option}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
 
               <div className="flex items-center space-x-2">
                 <Button
