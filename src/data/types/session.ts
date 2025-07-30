@@ -3,7 +3,6 @@ export interface Session {
   title: string;
   description: string;
   type: 'workshop' | 'mentoring' | 'networking' | 'pitch';
-  status: 'upcoming' | 'ongoing' | 'completed';
   date: string;
   time: string;
   duration: string;

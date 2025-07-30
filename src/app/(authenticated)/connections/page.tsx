@@ -20,44 +20,14 @@ import {
   Building2,
   Users,
   UserPlus,
-  Star,
+  Heart,
   Calendar,
   Clock,
   ExternalLink,
-  MessageSquare,
-  CheckCircle,
-  XCircle,
-  AlertCircle
+  MessageSquare
 } from 'lucide-react';
 import { Connection } from '@/data/types';
 import { connections, getConnectionSessions, getConnectionMeetings } from '@/data';
-
-// Helper functions
-const getStatusColor = (status: string) => {
-  switch (status) {
-    case 'connected':
-      return 'bg-green-100 text-green-800';
-    case 'pending':
-      return 'bg-yellow-100 text-yellow-800';
-    case 'requested':
-      return 'bg-blue-100 text-blue-800';
-    default:
-      return 'bg-gray-100 text-gray-800';
-  }
-};
-
-const getStatusIcon = (status: string) => {
-  switch (status) {
-    case 'connected':
-      return <CheckCircle className="h-4 w-4 text-green-600" />;
-    case 'pending':
-      return <AlertCircle className="h-4 w-4 text-yellow-600" />;
-    case 'requested':
-      return <UserPlus className="h-4 w-4 text-blue-600" />;
-    default:
-      return <Users className="h-4 w-4 text-gray-600" />;
-  }
-};
 
 // Cast the connections data to the correct type
 const typedConnections = connections as Connection[];
@@ -88,10 +58,6 @@ function ConnectionCard({
               <CardTitle className="text-lg">{connection.name}</CardTitle>
               <CardDescription>{connection.role} at {connection.company}</CardDescription>
               <div className="flex items-center space-x-2">
-                <Badge className={getStatusColor(connection.status)}>
-                  {getStatusIcon(connection.status)}
-                  {connection.status}
-                </Badge>
                 <Badge variant="outline">{connection.industry}</Badge>
               </div>
             </div>
@@ -105,22 +71,14 @@ function ConnectionCard({
             }}
             className="h-8 w-8 p-0 hover:bg-red-50"
           >
-            <Star 
-              className={`h-4 w-4 ${connection.isFavorite ? 'fill-yellow-500 text-yellow-500' : 'text-gray-400'}`} 
+            <Heart 
+              className={`h-4 w-4 ${connection.isFavorite ? 'fill-red-500 text-red-500' : 'text-gray-400'}`} 
             />
           </Button>
         </div>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-muted-foreground">Mutual Connections</span>
-            <span className="font-medium">{connection.mutualConnections}</span>
-          </div>
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-muted-foreground">Last Contact</span>
-            <span className="font-medium">{connection.lastContact}</span>
-          </div>
           <div className="flex flex-wrap gap-1">
             {connection.tags.slice(0, 3).map((tag, index) => (
               <Badge key={index} variant="secondary" className="text-xs">
@@ -141,8 +99,8 @@ function ConnectionCard({
 
 export default function ConnectionsPage() {
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedStatus, setSelectedStatus] = useState('all');
   const [selectedIndustry, setSelectedIndustry] = useState('all');
+  const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
   const [connections, setConnections] = useState<Connection[]>(typedConnections);
   const [selectedConnection, setSelectedConnection] = useState<Connection | null>(null);
   const [isSidePanelOpen, setIsSidePanelOpen] = useState(false);
@@ -174,9 +132,9 @@ export default function ConnectionsPage() {
                          connection.role.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          connection.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          connection.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
-    const matchesStatus = selectedStatus === 'all' || connection.status === selectedStatus;
     const matchesIndustry = selectedIndustry === 'all' || connection.industry === selectedIndustry;
-    return matchesSearch && matchesStatus && matchesIndustry;
+    const matchesFavorites = !showFavoritesOnly || connection.isFavorite;
+    return matchesSearch && matchesIndustry && matchesFavorites;
   });
 
   return (
@@ -202,13 +160,13 @@ export default function ConnectionsPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Total Connections
+              {showFavoritesOnly ? 'Favorite Connections' : 'Total Connections'}
             </CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {connections.length}
+              {filteredConnections.length}
             </div>
           </CardContent>
         </Card>
@@ -235,17 +193,6 @@ export default function ConnectionsPage() {
             className="pl-10"
           />
         </div>
-        <Select value={selectedStatus} onValueChange={setSelectedStatus}>
-          <SelectTrigger className="w-full sm:w-[200px]">
-            <SelectValue placeholder="Filter by status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Statuses</SelectItem>
-            <SelectItem value="connected">Connected</SelectItem>
-            <SelectItem value="pending">Pending</SelectItem>
-            <SelectItem value="requested">Requested</SelectItem>
-          </SelectContent>
-        </Select>
         <Select value={selectedIndustry} onValueChange={setSelectedIndustry}>
           <SelectTrigger className="w-full sm:w-[200px]">
             <SelectValue placeholder="Filter by industry" />
@@ -259,14 +206,14 @@ export default function ConnectionsPage() {
             ))}
           </SelectContent>
         </Select>
-        {/* <Button
+        <Button
           variant={showFavoritesOnly ? "default" : "outline"}
           onClick={() => setShowFavoritesOnly(!showFavoritesOnly)}
           className="flex items-center gap-2"
         >
           <Heart className={`h-4 w-4 ${showFavoritesOnly ? 'fill-white' : 'fill-red-500 text-red-500'}`} />
           {showFavoritesOnly ? 'Show All' : 'Favorites Only'}
-        </Button> */}
+        </Button>
       </div>
 
       {/* Connections Grid */}

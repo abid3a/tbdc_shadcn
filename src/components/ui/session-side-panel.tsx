@@ -95,9 +95,9 @@ export function SessionSidePanel({ session, isOpen, onClose }: SessionSidePanelP
   return (
     <>
       <Sheet open={isOpen} onOpenChange={onClose}>
-        <SheetContent side="right" className="w-full sm:max-w-lg p-0 bg-gray-50/50">
-          {/* Header with gradient background */}
-          <div className="relative bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6 pb-8">
+        <SheetContent side="right" className="w-full sm:max-w-lg p-0 bg-white">
+          {/* Header with white background */}
+          <div className="relative bg-white text-gray-900 p-6 pb-8 border-b border-gray-200">
             <SheetTitle className="text-xl font-semibold mb-2">Session Details</SheetTitle>
             <div className="flex items-center gap-2">
               <Badge className={`${getTypeColor(sessionWithAttendees.type)} border`}>
@@ -108,13 +108,11 @@ export function SessionSidePanel({ session, isOpen, onClose }: SessionSidePanelP
                 <span className="capitalize">{sessionWithAttendees.status}</span>
               </Badge>
             </div>
-            {/* Decorative element */}
-            <div className="absolute -bottom-4 left-6 right-6 h-8 bg-white rounded-t-xl"></div>
           </div>
 
-          <div className="flex-1 overflow-y-auto px-6 pb-6 space-y-6">
+          <div className="flex-1 overflow-y-auto px-6 pb-6 space-y-6 bg-gray-50">
             {/* Session Title */}
-            <Card className="border-0 shadow-sm bg-white">
+            <Card className="border-0 shadow-sm bg-white mt-6">
               <CardHeader className="pb-3">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
@@ -169,18 +167,12 @@ export function SessionSidePanel({ session, isOpen, onClose }: SessionSidePanelP
                     </div>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-
-            {/* Description */}
-            <Card className="border-0 shadow-sm bg-white">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-base">About This Session</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  {sessionWithAttendees.description}
-                </p>
+                
+                <div className="pt-4 border-t border-gray-100">
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    {sessionWithAttendees.description}
+                  </p>
+                </div>
               </CardContent>
             </Card>
 
@@ -240,15 +232,13 @@ export function SessionSidePanel({ session, isOpen, onClose }: SessionSidePanelP
 
             {/* Action Buttons */}
             <div className="flex gap-3 pt-2">
-              <Button className="flex-1 h-11 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
+              <Button className="flex-1 h-11">
                 <Video className="mr-2 h-4 w-4" />
                 Join Session
               </Button>
-              <Button variant="outline" size="icon" className="h-11 w-11">
-                <Share2 className="h-4 w-4" />
-              </Button>
-              <Button variant="outline" size="icon" className="h-11 w-11">
-                <Calendar className="h-4 w-4" />
+              <Button variant="outline" className="h-11">
+                <Calendar className="mr-2 h-4 w-4" />
+                Add to Calendar
               </Button>
             </div>
           </div>

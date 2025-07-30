@@ -56,12 +56,32 @@ const getTypeColor = (type: string) => {
   }
 };
 
+// Calculate session status based on date and time
+const calculateSessionStatus = (session: Session): 'upcoming' | 'ongoing' | 'completed' => {
+  const now = new Date();
+  const sessionDate = new Date(`${session.date} ${session.time}`);
+  
+  // Parse duration to get session end time
+  const durationMatch = session.duration.match(/(\d+(?:\.\d+)?)\s*hours?/i);
+  const durationHours = durationMatch ? parseFloat(durationMatch[1]) : 1;
+  const sessionEndTime = new Date(sessionDate.getTime() + (durationHours * 60 * 60 * 1000));
+  
+  if (now < sessionDate) {
+    return 'upcoming';
+  } else if (now >= sessionDate && now <= sessionEndTime) {
+    return 'ongoing';
+  } else {
+    return 'completed';
+  }
+};
+
 // Cast the sessions data to the correct type
 const typedSessions = sessions as Session[];
 
 // Session Card Component
 function SessionCard({ session, onSessionClick }: { session: Session; onSessionClick: (session: Session) => void }) {
   const sessionConnections = getSessionConnections(session.id);
+  const calculatedStatus = calculateSessionStatus(session);
 
   return (
     <Card 
@@ -81,8 +101,8 @@ function SessionCard({ session, onSessionClick }: { session: Session; onSessionC
           <Badge className={getTypeColor(session.type)}>
             {session.type}
           </Badge>
-          <Badge className={getStatusColor(session.status)}>
-            {session.status}
+          <Badge className={getStatusColor(calculatedStatus)}>
+            {calculatedStatus}
           </Badge>
         </div>
       </CardHeader>
@@ -98,7 +118,7 @@ function SessionCard({ session, onSessionClick }: { session: Session; onSessionC
           </div>
           <div className="flex items-center space-x-1">
             <Users className="h-4 w-4" />
-            <span>{session.attendees.length}/{session.maxAttendees}</span>
+            <span>{session.attendees.length}</span>
           </div>
         </div>
         
@@ -162,9 +182,11 @@ export default function SessionsPage() {
           return dateD.getTime() - dateC.getTime();
         
         case 'status':
-          // Sort by status priority: upcoming > ongoing > completed
+          // Sort by calculated status priority
+          const aStatus = calculateSessionStatus(a);
+          const bStatus = calculateSessionStatus(b);
           const statusPriority = { upcoming: 0, ongoing: 1, completed: 2 };
-          const statusDiff = statusPriority[a.status as keyof typeof statusPriority] - statusPriority[b.status as keyof typeof statusPriority];
+          const statusDiff = statusPriority[aStatus] - statusPriority[bStatus];
           if (statusDiff !== 0) return statusDiff;
           // If same status, sort by date
           const dateE = new Date(a.date + ' ' + a.time);
@@ -181,7 +203,7 @@ export default function SessionsPage() {
           return dateG.getTime() - dateH.getTime();
         
         case 'mentor':
-          // Sort by mentor name alphabetically
+          // Sort by mentor name
           const mentorDiff = a.mentor.name.localeCompare(b.mentor.name);
           if (mentorDiff !== 0) return mentorDiff;
           // If same mentor, sort by date
@@ -199,9 +221,11 @@ export default function SessionsPage() {
           return dateK.getTime() - dateL.getTime();
         
         default:
-          // Default: sort by status priority then date
+          // Default: sort by calculated status priority then date
+          const aStatusDefault = calculateSessionStatus(a);
+          const bStatusDefault = calculateSessionStatus(b);
           const statusPriorityDefault = { upcoming: 0, ongoing: 1, completed: 2 };
-          const statusDiffDefault = statusPriorityDefault[a.status as keyof typeof statusPriorityDefault] - statusPriorityDefault[b.status as keyof typeof statusPriorityDefault];
+          const statusDiffDefault = statusPriorityDefault[aStatusDefault] - statusPriorityDefault[bStatusDefault];
           if (statusDiffDefault !== 0) return statusDiffDefault;
           const dateM = new Date(a.date + ' ' + a.time);
           const dateN = new Date(b.date + ' ' + b.time);
@@ -292,7 +316,7 @@ export default function SessionsPage() {
 
         <TabsContent value="upcoming" className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {sortSessions(filteredSessions.filter(s => s.status === 'upcoming')).map((session) => (
+            {sortSessions(filteredSessions.filter(s => calculateSessionStatus(s) === 'upcoming')).map((session) => (
               <SessionCard 
                 key={session.id} 
                 session={session}
@@ -304,7 +328,7 @@ export default function SessionsPage() {
 
         <TabsContent value="ongoing" className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {sortSessions(filteredSessions.filter(s => s.status === 'ongoing')).map((session) => (
+            {sortSessions(filteredSessions.filter(s => calculateSessionStatus(s) === 'ongoing')).map((session) => (
               <SessionCard 
                 key={session.id} 
                 session={session}
@@ -316,7 +340,7 @@ export default function SessionsPage() {
 
         <TabsContent value="completed" className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {sortSessions(filteredSessions.filter(s => s.status === 'completed')).map((session) => (
+            {sortSessions(filteredSessions.filter(s => calculateSessionStatus(s) === 'completed')).map((session) => (
               <SessionCard 
                 key={session.id} 
                 session={session}

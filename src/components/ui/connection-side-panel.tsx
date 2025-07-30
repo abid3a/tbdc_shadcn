@@ -141,26 +141,20 @@ export function ConnectionSidePanel({ connection, isOpen, onClose }: ConnectionS
   return (
     <>
       <Sheet open={isOpen} onOpenChange={onClose}>
-        <SheetContent side="right" className="w-full sm:max-w-lg p-0 bg-gray-50/50">
-          {/* Header with gradient background */}
-          <div className="relative bg-gradient-to-r from-indigo-600 to-blue-600 text-white p-6 pb-8">
+        <SheetContent side="right" className="w-full sm:max-w-lg p-0 bg-white">
+          {/* Header with white background */}
+          <div className="relative bg-white text-gray-900 p-6 pb-8 border-b border-gray-200">
             <SheetTitle className="text-xl font-semibold mb-2">Connection Profile</SheetTitle>
             <div className="flex items-center gap-2">
-              <Badge className={`${getStatusColor(connection.status)} border`}>
-                {getStatusIcon(connection.status)}
-                <span className="ml-1 capitalize">{connection.status}</span>
-              </Badge>
-              <Badge className="bg-white/20 text-white border-white/30">
+              <Badge className="bg-gray-100 text-gray-700 border-gray-200">
                 {connection.industry}
               </Badge>
             </div>
-            {/* Decorative element */}
-            <div className="absolute -bottom-4 left-6 right-6 h-8 bg-white rounded-t-xl"></div>
           </div>
 
-          <div className="flex-1 overflow-y-auto px-6 pb-6 space-y-6">
+          <div className="flex-1 overflow-y-auto px-6 pb-6 space-y-6 bg-gray-50">
             {/* Profile Card */}
-            <Card className="border-0 shadow-sm bg-white">
+            <Card className="border-0 shadow-sm bg-white mt-6">
               <CardContent className="p-6">
                 <div className="flex items-start space-x-4">
                   <div className="relative">
@@ -192,16 +186,6 @@ export function ConnectionSidePanel({ connection, isOpen, onClose }: ConnectionS
                       </Button>
                     </div>
                     
-                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                      <div className="flex items-center gap-1">
-                        <Users className="h-3 w-3" />
-                        <span>{connection.mutualConnections} mutual</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Clock className="h-3 w-3" />
-                        <span>{connection.lastContact}</span>
-                      </div>
-                    </div>
                   </div>
                 </div>
               </CardContent>
@@ -388,16 +372,6 @@ export function ConnectionSidePanel({ connection, isOpen, onClose }: ConnectionS
 
             {/* Action Buttons */}
             <div className="flex gap-3 pt-2">
-              <Button className="flex-1 h-11 bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700">
-                <MessageSquare className="mr-2 h-4 w-4" />
-                Send Message
-              </Button>
-              <Button variant="outline" size="icon" className="h-11 w-11">
-                <Phone className="h-4 w-4" />
-              </Button>
-              <Button variant="outline" size="icon" className="h-11 w-11">
-                <Share2 className="h-4 w-4" />
-              </Button>
             </div>
           </div>
         </SheetContent>

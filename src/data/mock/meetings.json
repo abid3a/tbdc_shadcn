@@ -5,7 +5,6 @@
       "title": "Product Strategy Discussion",
       "description": "Deep dive into product roadmap and strategic planning for Q1.",
       "type": "internal",
-      "status": "confirmed",
       "date": "2024-01-15",
       "time": "10:00 AM",
       "duration": "1 hour",
@@ -25,15 +24,13 @@
           "company": "TechStart Inc."
         }
       ],
-      "maxAttendees": 2,
-      "tags": ["Product", "Strategy", "Planning"]
+      "maxAttendees": 2
     },
     {
       "id": "2",
       "title": "Investor Pitch Review",
       "description": "Practice pitch presentation and receive feedback from investors.",
       "type": "investor",
-      "status": "confirmed",
       "date": "2024-01-16",
       "time": "2:00 PM",
       "duration": "1.5 hours",
@@ -59,15 +56,13 @@
           "company": "TechStart Inc."
         }
       ],
-      "maxAttendees": 5,
-      "tags": ["Pitch", "Investment", "Presentation"]
+      "maxAttendees": 5
     },
     {
       "id": "3",
       "title": "Technical Architecture Review",
       "description": "Review technical architecture and discuss scalability plans.",
       "type": "eir",
-      "status": "confirmed",
       "date": "2024-01-12",
       "time": "11:00 AM",
       "duration": "2 hours",
@@ -87,15 +82,13 @@
           "company": "TechStart Inc."
         }
       ],
-      "maxAttendees": 2,
-      "tags": ["Technical", "Architecture", "Scalability"]
+      "maxAttendees": 2
     },
     {
       "id": "4",
       "title": "Customer Feedback Session",
       "description": "Connect with customers to gather feedback and insights.",
       "type": "customer",
-      "status": "pending",
       "date": "2024-01-18",
       "time": "6:00 PM",
       "duration": "2 hours",
@@ -121,8 +114,7 @@
           "company": "Startup Solutions"
         }
       ],
-      "maxAttendees": 20,
-      "tags": ["Customer", "Feedback", "Insights"]
+      "maxAttendees": 20
     }
   ]
 }

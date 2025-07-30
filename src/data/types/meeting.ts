@@ -3,7 +3,6 @@ export interface Meeting {
   title: string;
   description: string;
   type: 'investor' | 'eir' | 'customer' | 'internal';
-  status: 'confirmed' | 'pending' | 'completed' | 'cancelled';
   date: string;
   time: string;
   duration: string;

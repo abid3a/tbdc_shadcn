@@ -118,9 +118,9 @@ export function MeetingSidePanel({ meeting, isOpen, onClose }: MeetingSidePanelP
   return (
     <>
       <Sheet open={isOpen} onOpenChange={onClose}>
-        <SheetContent side="right" className="w-full sm:max-w-lg p-0 bg-gray-50/50">
-          {/* Header with gradient background */}
-          <div className="relative bg-gradient-to-r from-emerald-600 to-teal-600 text-white p-6 pb-8">
+        <SheetContent side="right" className="w-full sm:max-w-lg p-0 bg-white">
+          {/* Header with white background */}
+          <div className="relative bg-white text-gray-900 p-6 pb-8 border-b border-gray-200">
             <SheetTitle className="text-xl font-semibold mb-2">Meeting Details</SheetTitle>
             <div className="flex items-center gap-2">
               <Badge className={`${getTypeColor(meeting.type)} border`}>
@@ -131,13 +131,11 @@ export function MeetingSidePanel({ meeting, isOpen, onClose }: MeetingSidePanelP
                 <span className="capitalize">{meeting.status}</span>
               </Badge>
             </div>
-            {/* Decorative element */}
-            <div className="absolute -bottom-4 left-6 right-6 h-8 bg-white rounded-t-xl"></div>
           </div>
 
-          <div className="flex-1 overflow-y-auto px-6 pb-6 space-y-6">
+          <div className="flex-1 overflow-y-auto px-6 pb-6 space-y-6 bg-gray-50">
             {/* Meeting Title */}
-            <Card className="border-0 shadow-sm bg-white">
+            <Card className="border-0 shadow-sm bg-white mt-6">
               <CardHeader className="pb-3">
                 <CardTitle className="text-xl leading-tight mb-2">
                   {meeting.title}
@@ -190,31 +188,11 @@ export function MeetingSidePanel({ meeting, isOpen, onClose }: MeetingSidePanelP
                   </div>
                 )}
 
-                {meeting.meetingUrl && (
-                  <div className="pt-2 border-t border-gray-100">
-                    <div className="space-y-2">
-                      <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Meeting Link</p>
-                      <Button variant="outline" size="sm" className="w-full justify-start" asChild>
-                        <a href={meeting.meetingUrl} target="_blank" rel="noopener noreferrer">
-                          <ExternalLink className="mr-2 h-3 w-3" />
-                          Join Meeting
-                        </a>
-                      </Button>
-                    </div>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-
-            {/* Description */}
-            <Card className="border-0 shadow-sm bg-white">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-base">Meeting Agenda</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  {meeting.description}
-                </p>
+                <div className="pt-4 border-t border-gray-100">
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    {meeting.description}
+                  </p>
+                </div>
               </CardContent>
             </Card>
 
@@ -292,15 +270,13 @@ export function MeetingSidePanel({ meeting, isOpen, onClose }: MeetingSidePanelP
 
             {/* Action Buttons */}
             <div className="flex gap-3 pt-2">
-              <Button className="flex-1 h-11 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700">
+              <Button className="flex-1 h-11">
                 <Video className="mr-2 h-4 w-4" />
                 Join Meeting
               </Button>
-              <Button variant="outline" size="icon" className="h-11 w-11">
-                <Share2 className="h-4 w-4" />
-              </Button>
-              <Button variant="outline" size="icon" className="h-11 w-11">
-                <Calendar className="h-4 w-4" />
+              <Button variant="outline" className="h-11">
+                <Calendar className="mr-2 h-4 w-4" />
+                Add to Calendar
               </Button>
             </div>
           </div>

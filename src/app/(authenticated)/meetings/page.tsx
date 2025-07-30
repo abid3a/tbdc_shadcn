@@ -39,14 +39,12 @@ import { Meeting } from '@/data/types';
 // Helper functions
 const getStatusColor = (status: string) => {
   switch (status) {
-    case 'confirmed':
-      return 'bg-green-100 text-green-800';
-    case 'pending':
-      return 'bg-yellow-100 text-yellow-800';
-    case 'completed':
+    case 'upcoming':
       return 'bg-blue-100 text-blue-800';
-    case 'cancelled':
-      return 'bg-red-100 text-red-800';
+    case 'ongoing':
+      return 'bg-green-100 text-green-800';
+    case 'completed':
+      return 'bg-gray-100 text-gray-800';
     default:
       return 'bg-gray-100 text-gray-800';
   }
@@ -80,8 +78,29 @@ const getFormatIcon = (format: string) => {
   }
 };
 
+// Calculate meeting status based on date and time
+const calculateMeetingStatus = (meeting: Meeting): 'upcoming' | 'ongoing' | 'completed' => {
+  const now = new Date();
+  const meetingDate = new Date(`${meeting.date} ${meeting.time}`);
+  
+  // Parse duration to get meeting end time
+  const durationMatch = meeting.duration.match(/(\d+(?:\.\d+)?)\s*hours?/i);
+  const durationHours = durationMatch ? parseFloat(durationMatch[1]) : 1;
+  const meetingEndTime = new Date(meetingDate.getTime() + (durationHours * 60 * 60 * 1000));
+  
+  if (now < meetingDate) {
+    return 'upcoming';
+  } else if (now >= meetingDate && now <= meetingEndTime) {
+    return 'ongoing';
+  } else {
+    return 'completed';
+  }
+};
+
 // Meeting Card Component
 function MeetingCard({ meeting, onMeetingClick }: { meeting: Meeting; onMeetingClick: (meeting: Meeting) => void }) {
+  const calculatedStatus = calculateMeetingStatus(meeting);
+  
   return (
     <Card 
       className="hover:shadow-md transition-shadow cursor-pointer"
@@ -100,8 +119,8 @@ function MeetingCard({ meeting, onMeetingClick }: { meeting: Meeting; onMeetingC
           <Badge className={getTypeColor(meeting.type)}>
             {meeting.type}
           </Badge>
-          <Badge className={getStatusColor(meeting.status)}>
-            {meeting.status}
+          <Badge className={getStatusColor(calculatedStatus)}>
+            {calculatedStatus}
           </Badge>
         </div>
       </CardHeader>
@@ -121,16 +140,8 @@ function MeetingCard({ meeting, onMeetingClick }: { meeting: Meeting; onMeetingC
           </div>
           <div className="flex items-center space-x-1">
             <Users className="h-4 w-4" />
-            <span>{meeting.attendees.length}/{meeting.maxAttendees}</span>
+            <span>{meeting.attendees.length}</span>
           </div>
-        </div>
-        
-        <div className="flex flex-wrap gap-1">
-          {meeting.tags.map((tag, index) => (
-            <Badge key={index} variant="secondary" className="text-xs">
-              {tag}
-            </Badge>
-          ))}
         </div>
       </CardContent>
     </Card>
@@ -141,8 +152,8 @@ export default function MeetingsPage() {
   const { user } = useAuth();
   const { data: meetings, loading, error, refetch } = useMeetings();
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedStatus, setSelectedStatus] = useState('all');
   const [selectedType, setSelectedType] = useState('all');
+  const [sortBy, setSortBy] = useState('date-asc');
   const [selectedMeeting, setSelectedMeeting] = useState<Meeting | null>(null);
   const [isSidePanelOpen, setIsSidePanelOpen] = useState(false);
 
@@ -158,30 +169,80 @@ export default function MeetingsPage() {
     setSelectedMeeting(null);
   };
 
-  // Sort meetings by date and status
+  // Enhanced sort meetings function
   const sortMeetings = (meetings: Meeting[]) => {
     return meetings.sort((a, b) => {
-      // Sort by status priority first
-      const statusPriority = { confirmed: 1, pending: 2, completed: 3, cancelled: 4 };
-      const aPriority = statusPriority[a.status as keyof typeof statusPriority] || 5;
-      const bPriority = statusPriority[b.status as keyof typeof statusPriority] || 5;
-      
-      if (aPriority !== bPriority) {
-        return aPriority - bPriority;
+      switch (sortBy) {
+        case 'date-asc':
+          // Sort by date (earliest first)
+          const dateA = new Date(a.date + ' ' + a.time);
+          const dateB = new Date(b.date + ' ' + b.time);
+          return dateA.getTime() - dateB.getTime();
+        
+        case 'date-desc':
+          // Sort by date (latest first)
+          const dateC = new Date(a.date + ' ' + a.time);
+          const dateD = new Date(b.date + ' ' + b.time);
+          return dateD.getTime() - dateC.getTime();
+        
+        case 'status':
+          // Sort by calculated status priority
+          const aStatus = calculateMeetingStatus(a);
+          const bStatus = calculateMeetingStatus(b);
+          const statusPriority = { upcoming: 0, ongoing: 1, completed: 2 };
+          const statusDiff = statusPriority[aStatus] - statusPriority[bStatus];
+          if (statusDiff !== 0) return statusDiff;
+          // If same status, sort by date
+          const dateE = new Date(a.date + ' ' + a.time);
+          const dateF = new Date(b.date + ' ' + b.time);
+          return dateE.getTime() - dateF.getTime();
+        
+        case 'type':
+          // Sort by type alphabetically
+          const typeDiff = a.type.localeCompare(b.type);
+          if (typeDiff !== 0) return typeDiff;
+          // If same type, sort by date
+          const dateG = new Date(a.date + ' ' + a.time);
+          const dateH = new Date(b.date + ' ' + b.time);
+          return dateG.getTime() - dateH.getTime();
+        
+        case 'format':
+          // Sort by format alphabetically
+          const formatDiff = a.format.localeCompare(b.format);
+          if (formatDiff !== 0) return formatDiff;
+          // If same format, sort by date
+          const dateI = new Date(a.date + ' ' + a.time);
+          const dateJ = new Date(b.date + ' ' + b.time);
+          return dateI.getTime() - dateJ.getTime();
+        
+        case 'title':
+          // Sort by title alphabetically
+          const titleDiff = a.title.localeCompare(b.title);
+          if (titleDiff !== 0) return titleDiff;
+          // If same title, sort by date
+          const dateK = new Date(a.date + ' ' + a.time);
+          const dateL = new Date(b.date + ' ' + b.time);
+          return dateK.getTime() - dateL.getTime();
+        
+        default:
+          // Default: sort by calculated status priority then date
+          const aStatusDefault = calculateMeetingStatus(a);
+          const bStatusDefault = calculateMeetingStatus(b);
+          const statusPriorityDefault = { upcoming: 0, ongoing: 1, completed: 2 };
+          const statusDiffDefault = statusPriorityDefault[aStatusDefault] - statusPriorityDefault[bStatusDefault];
+          if (statusDiffDefault !== 0) return statusDiffDefault;
+          const dateM = new Date(a.date + ' ' + a.time);
+          const dateN = new Date(b.date + ' ' + b.time);
+          return dateM.getTime() - dateN.getTime();
       }
-      
-      // Then sort by date
-      return new Date(a.date).getTime() - new Date(b.date).getTime();
     });
   };
 
   const filteredMeetings = meetings ? meetings.filter(meeting => {
     const matchesSearch = meeting.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         meeting.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         meeting.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
-    const matchesStatus = selectedStatus === 'all' || meeting.status === selectedStatus;
+                         meeting.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesType = selectedType === 'all' || meeting.type === selectedType;
-    return matchesSearch && matchesStatus && matchesType;
+    return matchesSearch && matchesType;
   }) : [];
 
   const sortedMeetings = sortMeetings(filteredMeetings);
@@ -247,7 +308,7 @@ export default function MeetingsPage() {
         )}
       </div>
 
-      {/* Filters */}
+      {/* Filters and Sort */}
       <div className="flex flex-col sm:flex-row gap-4">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
@@ -271,14 +332,27 @@ export default function MeetingsPage() {
             ))}
           </SelectContent>
         </Select>
+        <Select value={sortBy} onValueChange={setSortBy}>
+          <SelectTrigger className="w-full sm:w-[200px]">
+            <SelectValue placeholder="Sort by" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="date-asc">Date (Earliest First)</SelectItem>
+            <SelectItem value="date-desc">Date (Latest First)</SelectItem>
+            <SelectItem value="status">Status</SelectItem>
+            <SelectItem value="type">Type</SelectItem>
+            <SelectItem value="format">Format</SelectItem>
+            <SelectItem value="title">Title</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       {/* Meetings Grid */}
       <Tabs defaultValue="all" className="space-y-4">
         <TabsList>
           <TabsTrigger value="all">All Meetings</TabsTrigger>
-          <TabsTrigger value="confirmed">Confirmed</TabsTrigger>
-          <TabsTrigger value="pending">Pending</TabsTrigger>
+          <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
+          <TabsTrigger value="ongoing">Ongoing</TabsTrigger>
           <TabsTrigger value="completed">Completed</TabsTrigger>
         </TabsList>
 
@@ -294,9 +368,9 @@ export default function MeetingsPage() {
           </div>
         </TabsContent>
 
-        <TabsContent value="confirmed" className="space-y-4">
+        <TabsContent value="upcoming" className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {sortMeetings(filteredMeetings.filter(m => m.status === 'confirmed')).map((meeting) => (
+            {sortMeetings(filteredMeetings.filter(m => calculateMeetingStatus(m) === 'upcoming')).map((meeting) => (
               <MeetingCard 
                 key={meeting.id} 
                 meeting={meeting}
@@ -306,9 +380,9 @@ export default function MeetingsPage() {
           </div>
         </TabsContent>
 
-        <TabsContent value="pending" className="space-y-4">
+        <TabsContent value="ongoing" className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {sortMeetings(filteredMeetings.filter(m => m.status === 'pending')).map((meeting) => (
+            {sortMeetings(filteredMeetings.filter(m => calculateMeetingStatus(m) === 'ongoing')).map((meeting) => (
               <MeetingCard 
                 key={meeting.id} 
                 meeting={meeting}
@@ -320,7 +394,7 @@ export default function MeetingsPage() {
 
         <TabsContent value="completed" className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {sortMeetings(filteredMeetings.filter(m => m.status === 'completed')).map((meeting) => (
+            {sortMeetings(filteredMeetings.filter(m => calculateMeetingStatus(m) === 'completed')).map((meeting) => (
               <MeetingCard 
                 key={meeting.id} 
                 meeting={meeting}
