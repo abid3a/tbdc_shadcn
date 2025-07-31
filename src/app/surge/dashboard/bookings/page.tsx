@@ -41,7 +41,8 @@ const allBookings = [
     meetingType: 'virtual',
     meetingLink: 'https://meet.google.com/abc-defg-hij',
     price: 250,
-    notes: 'Discuss our new product roadmap and get feedback on go-to-market strategy.'
+    notes: 'Discuss our new product roadmap and get feedback on go-to-market strategy.',
+    googleCalendarLink: 'https://calendar.google.com/calendar/event?eid=abc-defg-hij'
   },
   {
     id: '2',
@@ -59,7 +60,8 @@ const allBookings = [
     meetingType: 'virtual',
     meetingLink: null,
     price: 450,
-    notes: 'Review our current architecture and discuss scaling strategies.'
+    notes: 'Review our current architecture and discuss scaling strategies.',
+    googleCalendarLink: null
   },
   {
     id: '3',
@@ -77,7 +79,8 @@ const allBookings = [
     meetingType: 'virtual',
     meetingLink: null,
     price: 200,
-    notes: 'Completed session on digital marketing strategies and growth hacking techniques.'
+    notes: 'Completed session on digital marketing strategies and growth hacking techniques.',
+    googleCalendarLink: null
   },
   {
     id: '4',
@@ -95,7 +98,8 @@ const allBookings = [
     meetingType: 'in-person',
     meetingLink: null,
     price: 800,
-    notes: 'Discuss fundraising strategy and prepare for investor meetings.'
+    notes: 'Discuss fundraising strategy and prepare for investor meetings.',
+    googleCalendarLink: null
   }
 ];
 
@@ -319,6 +323,15 @@ export default function BookingsPage() {
                               <a href={booking.meetingLink} target="_blank" rel="noopener noreferrer">
                                 <Video className="mr-2 h-4 w-4" />
                                 Join Meeting
+                              </a>
+                            </Button>
+                          )}
+                          
+                          {booking.googleCalendarLink && (
+                            <Button size="sm" variant="outline" asChild>
+                              <a href={booking.googleCalendarLink} target="_blank" rel="noopener noreferrer">
+                                <ExternalLink className="mr-2 h-4 w-4" />
+                                View in Calendar
                               </a>
                             </Button>
                           )}

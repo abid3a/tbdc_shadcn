@@ -1,6 +1,8 @@
 "use client"
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/contexts/auth-context';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -58,19 +60,41 @@ const stats = [
 ];
 
 export default function SurgeLandingPage() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const router = useRouter();
+  const { isAuthenticated, loginWithDemo, isLoading } = useAuth();
+  const [isAutoSigningIn, setIsAutoSigningIn] = useState(false);
 
   useEffect(() => {
-    // Check if user is authenticated (this would integrate with your auth system)
-    // For now, we'll simulate this
-    const checkAuth = () => {
-      // This would check your actual auth state
-      const token = localStorage.getItem('auth-token');
-      setIsAuthenticated(!!token);
+    // Auto-sign in users when they visit the Surge page
+    const autoSignIn = async () => {
+      if (!isAuthenticated && !isLoading && !isAutoSigningIn) {
+        setIsAutoSigningIn(true);
+        try {
+          // Auto-sign in as a founder demo account for full access
+          await loginWithDemo('founder');
+          console.log('Auto-signed in to Surge');
+        } catch (error) {
+          console.error('Auto-sign in failed:', error);
+        } finally {
+          setIsAutoSigningIn(false);
+        }
+      }
     };
-    
-    checkAuth();
-  }, []);
+
+    autoSignIn();
+  }, [isAuthenticated, isLoading, loginWithDemo, isAutoSigningIn]);
+
+  // Show loading state while auto-signing in
+  if (isLoading || isAutoSigningIn) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="text-muted-foreground">Signing you in to Surge...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
@@ -120,7 +144,7 @@ export default function SurgeLandingPage() {
           </div>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href={isAuthenticated ? "/surge/dashboard" : "/register"}>
+            <Link href="/surge/dashboard">
               <Button size="lg" className="text-lg px-8 py-6">
                 <Calendar className="mr-2 h-5 w-5" />
                 Book Your First Session
@@ -272,7 +296,7 @@ export default function SurgeLandingPage() {
               Join thousands of founders who have accelerated their growth with expert mentorship.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href={isAuthenticated ? "/surge/dashboard" : "/register"}>
+              <Link href="/surge/dashboard">
                 <Button size="lg" variant="secondary" className="text-lg px-8 py-6">
                   Start Your Journey
                   <ArrowRight className="ml-2 h-5 w-5" />

@@ -37,6 +37,7 @@ const mentorData = {
   role: 'Product Strategy Expert',
   company: 'TechCorp',
   avatar: '/avatars/sarah.jpg',
+  email: 'sarah.chen@techcorp.com',
   bio: 'Sarah is a seasoned product strategist with over 10 years of experience helping startups scale their products and go-to-market strategies. She has worked with companies ranging from early-stage startups to Fortune 500 companies, specializing in user research, product-market fit, and growth strategies.',
   expertise: ['Product Strategy', 'Go-to-Market', 'User Research', 'Product Management', 'Growth Strategy', 'Market Analysis'],
   rating: 4.9,
@@ -119,6 +120,9 @@ export default function MentorDetailPage() {
   const [selectedTime, setSelectedTime] = useState('');
   const [sessionTopic, setSessionTopic] = useState('');
   const [sessionDuration, setSessionDuration] = useState('60');
+  const [isBooking, setIsBooking] = useState(false);
+  const [isCalendarConnected, setIsCalendarConnected] = useState(false);
+  const [showGoogleConnectModal, setShowGoogleConnectModal] = useState(false);
 
   // Mock time slots
   const timeSlots = [
@@ -132,19 +136,171 @@ export default function MentorDetailPage() {
     { value: '120', label: '2 hours - $500' }
   ];
 
-  const handleBooking = () => {
-    // This would integrate with your booking system
-    console.log('Booking session:', {
-      mentorId: mentor.id,
-      date: selectedDate,
-      time: selectedTime,
-      topic: sessionTopic,
-      duration: sessionDuration
-    });
+  // Check if Google Calendar is connected on component mount
+  useEffect(() => {
+    const checkCalendarConnection = async () => {
+      try {
+        const response = await fetch('/api/auth/google/status');
+        const data = await response.json();
+        
+        console.log('Calendar connection status:', data);
+        setIsCalendarConnected(data.isConnected);
+      } catch (error) {
+        console.error('Error checking calendar connection status:', error);
+        setIsCalendarConnected(false);
+      }
+    };
+
+    checkCalendarConnection();
+  }, []);
+
+  // Check for URL parameters (success/error messages)
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const success = urlParams.get('success');
+    const error = urlParams.get('error');
+    const details = urlParams.get('details');
+
+    if (success === 'calendar_connected') {
+      console.log('Calendar connected successfully!');
+      setIsCalendarConnected(true);
+      // Clear the URL parameters
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+
+    if (error) {
+      console.error('Calendar connection error:', { error, details });
+      let errorMessage = 'Failed to connect Google Calendar';
+      
+      if (error === 'auth_failed') {
+        errorMessage = 'Authorization failed. Please try again.';
+      } else if (error === 'no_code') {
+        errorMessage = 'No authorization code received. Please try again.';
+      } else if (error === 'token_exchange_failed') {
+        errorMessage = 'Failed to complete authentication. Please try again.';
+      }
+      
+      if (details) {
+        errorMessage += ` Details: ${details}`;
+      }
+      
+      alert(errorMessage);
+      // Clear the URL parameters
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }, []);
+
+  // Connect to Google Calendar
+  const connectGoogleCalendar = () => {
+    console.log('Attempting to connect Google Calendar...');
     
-    setShowBookingModal(false);
-    // Redirect to confirmation or dashboard
-    router.push('/surge/dashboard/bookings');
+    // Directly redirect to the OAuth endpoint
+    // The API route will handle the OAuth URL generation and redirect
+    window.location.href = '/api/auth/google';
+  };
+
+  // Convert 12-hour time format to 24-hour format
+  const convertTo24Hour = (time12h: string) => {
+    const [time, modifier] = time12h.split(' ');
+    let [hours, minutes] = time.split(':');
+    
+    if (hours === '12') {
+      hours = '00';
+    }
+    
+    if (modifier === 'PM') {
+      hours = String(parseInt(hours, 10) + 12);
+    }
+    
+    return `${hours.padStart(2, '0')}:${minutes}`;
+  };
+
+  const handleBooking = async () => {
+    console.log('Booking validation check:', {
+      selectedDate,
+      selectedTime,
+      sessionTopic,
+      sessionDuration,
+      isCalendarConnected
+    });
+
+    // Check if all required fields are filled
+    const missingFields = [];
+    if (!selectedDate) missingFields.push('Date');
+    if (!selectedTime) missingFields.push('Time');
+    if (!sessionTopic || !sessionTopic.trim()) missingFields.push('Session Topic');
+
+    if (missingFields.length > 0) {
+      console.error('Validation failed:', {
+        selectedDate: selectedDate ? 'set' : 'missing',
+        selectedTime: selectedTime ? 'set' : 'missing',
+        sessionTopic: sessionTopic && sessionTopic.trim() ? 'set' : 'missing'
+      });
+      alert(`Please fill in the following required fields: ${missingFields.join(', ')}`);
+      return;
+    }
+
+    // Check if Google Calendar is connected
+    if (!isCalendarConnected) {
+      const shouldConnect = confirm('Google Calendar connection is required to create calendar events with Google Meet links. Would you like to connect your Google Calendar now?');
+      if (shouldConnect) {
+        connectGoogleCalendar();
+      }
+      return;
+    }
+
+    setIsBooking(true);
+    try {
+      // Convert time to 24-hour format and create proper date string
+      const time24h = convertTo24Hour(selectedTime);
+      const dateString = selectedDate?.toISOString().split('T')[0];
+      const startTime = new Date(`${dateString}T${time24h}:00`);
+      const endTime = new Date(startTime.getTime() + parseInt(sessionDuration) * 60 * 1000);
+
+      console.log('Creating booking with:', {
+        mentorEmail: mentor.email,
+        startTime: startTime.toISOString(),
+        endTime: endTime.toISOString(),
+        topic: sessionTopic.trim(),
+        originalTime: selectedTime,
+        convertedTime: time24h
+      });
+
+      const response = await fetch('/api/bookings/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          mentorEmail: mentor.email,
+          userEmail: 'user@example.com', // Get from auth context
+          startTime: startTime.toISOString(),
+          endTime: endTime.toISOString(),
+          topic: sessionTopic.trim(),
+        }),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        setShowBookingModal(false);
+        // Show success message and redirect
+        router.push(`/surge/dashboard/bookings?eventId=${result.eventId}`);
+      } else {
+        console.error('Booking failed:', result);
+        if (result.error?.includes('Google Calendar not connected')) {
+          setIsCalendarConnected(false);
+          alert('Google Calendar connection expired. Please reconnect your calendar and try again.');
+        } else {
+          alert('Failed to create booking. Please try again.');
+        }
+      }
+    } catch (error) {
+      console.error('Error creating booking:', error);
+      alert('Failed to create booking. Please try again.');
+    } finally {
+      setIsBooking(false);
+    }
   };
 
   const getRatingColor = (rating: number) => {
@@ -343,6 +499,8 @@ export default function MentorDetailPage() {
                 <div className="text-sm text-muted-foreground">per hour</div>
               </div>
 
+              
+
               <div className="space-y-2">
                 <div className="flex items-center justify-between text-sm">
                   <span>Response time</span>
@@ -352,6 +510,58 @@ export default function MentorDetailPage() {
                   <span>Availability</span>
                   <span className="font-medium">{mentor.availability}</span>
                 </div>
+              </div>
+
+              {/* Google Calendar Connection Status */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between text-sm">
+                  <span>Calendar</span>
+                  <div className="flex items-center space-x-2">
+                    {isCalendarConnected ? (
+                      <div className="flex items-center space-x-1 text-green-600">
+                        <CheckCircle className="h-4 w-4" />
+                        <span className="text-xs">Connected</span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center space-x-1 text-orange-600">
+                        <XCircle className="h-4 w-4" />
+                        <span className="text-xs">Not Connected</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                
+                {!isCalendarConnected && (
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={connectGoogleCalendar}
+                    className="w-full"
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    Connect Google Calendar
+                  </Button>
+                )}
+
+                {/* Debug button for troubleshooting */}
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => window.open('/api/auth/google/test', '_blank')}
+                  className="w-full text-xs text-muted-foreground"
+                >
+                  🔧 Test Configuration
+                </Button>
+
+                {/* OAuth Debug button */}
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => window.open('/api/auth/google/debug', '_blank')}
+                  className="w-full text-xs text-muted-foreground"
+                >
+                  🔍 Debug OAuth Setup
+                </Button>
               </div>
 
               <Dialog open={showBookingModal} onOpenChange={setShowBookingModal}>
@@ -412,12 +622,13 @@ export default function MentorDetailPage() {
                     </div>
 
                     <div className="space-y-2">
-                      <label className="text-sm font-medium">Session Topic</label>
+                      <label className="text-sm font-medium">Session Topic *</label>
                       <Textarea
-                        placeholder="What would you like to discuss? (optional)"
+                        placeholder="What would you like to discuss? (required)"
                         value={sessionTopic}
                         onChange={(e) => setSessionTopic(e.target.value)}
                         rows={3}
+                        required
                       />
                     </div>
 
@@ -428,8 +639,8 @@ export default function MentorDetailPage() {
                           ${durationOptions.find(opt => opt.value === sessionDuration)?.label.split(' - ')[1]?.replace('$', '') || '250'}
                         </span>
                       </div>
-                      <Button onClick={handleBooking} disabled={!selectedDate || !selectedTime}>
-                        Confirm Booking
+                      <Button onClick={handleBooking} disabled={!selectedDate || !selectedTime || !sessionTopic.trim() || isBooking}>
+                        {isBooking ? 'Creating Booking...' : 'Confirm Booking'}
                       </Button>
                     </div>
                   </div>

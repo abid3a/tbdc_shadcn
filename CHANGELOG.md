@@ -2,7 +2,159 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2024-01-15 - Google Calendar Integration Simplified
+
+### Added
+- **Simplified Google Calendar Integration**: Completely redesigned calendar integration for easier setup:
+  - **OAuth2 Authentication**: Replaced complex service account setup with simple OAuth2 flow
+  - **One-Click Connection**: Users can connect their Google Calendar with a single click
+  - **No Complex Setup**: Eliminated need for service account keys, private keys, and complex permissions
+  - **User-Friendly**: Clear connection status and easy reconnection process
+  - **Automatic Google Meet**: Every booking still includes automatic Google Meet link generation
+  - **Email Invitations**: Both mentor and mentee receive calendar invitations
+  - **Secure Token Storage**: OAuth2 tokens stored securely in HTTP-only cookies
+  - **Connection Status UI**: Visual indicators showing calendar connection status
+  - **Error Handling**: Clear error messages for connection issues and expired tokens
+
+### Fixed
+- **Google Calendar OAuth2 Initialization Error**: ✅ **RESOLVED** - Fixed "Cannot read properties of undefined (reading 'OAuth2')" error by:
+  - **Dynamic Import Strategy**: Implemented dynamic imports for googleapis to avoid initialization issues in Next.js API routes
+  - **Direct OAuth2Client Import**: Used direct import from google-auth-library instead of accessing through google.auth
+  - **Enhanced Error Handling**: Added proper validation for google object initialization with clear error messages
+  - **Robust Initialization**: Created getGoogle() method for lazy loading of googleapis to prevent undefined access errors
+  - **Debug Route Improvements**: Updated debug endpoint to use consistent import strategy and better error reporting
+  - **Import Strategy Testing**: Created comprehensive test endpoint (`/api/auth/google/test`) to debug different import methods and identify the most reliable approach for Next.js API routes
+  - **Status**: All OAuth2 tests now passing successfully - Google Calendar integration fully functional
+- **Google Calendar Connection Frontend Error**: ✅ **RESOLVED** - Fixed "Failed to fetch" error in frontend calendar connection by:
+  - **Simplified OAuth Flow**: Removed unnecessary fetch request and directly redirect to OAuth endpoint
+  - **Proper Redirect Handling**: Fixed frontend to handle OAuth redirects correctly instead of trying to parse JSON response
+  - **Status API Endpoint**: Created `/api/auth/google/status` endpoint for reliable connection status checking
+  - **Enhanced Error Handling**: Improved frontend error handling and user feedback for OAuth flow
+  - **Cookie-Based Status**: Updated frontend to use server-side status checking instead of client-side cookie parsing
+- **Google Calendar Callback Debugging**: Added comprehensive debugging endpoints for OAuth callback issues:
+  - **Callback Test Endpoint**: Created `/api/auth/google/callback/test` to debug callback URL parameters and routing
+  - **Configuration Debug Endpoint**: Created `/api/auth/google/config` to verify OAuth setup and redirect URI configuration
+  - **Enhanced Logging**: Added detailed logging for callback parameter processing and error handling
+  - **Redirect URI Validation**: Added automatic validation to ensure redirect URI matches current environment
+- **Google Calendar OAuth Redirect Fix**: ✅ **RESOLVED** - Fixed "URL is malformed" error in OAuth callback by:
+  - **Absolute URL Redirects**: Updated all redirect calls to use absolute URLs instead of relative URLs
+  - **Environment-Aware Base URL**: Added helper function to automatically determine correct base URL for development/production
+  - **Next.js Compliance**: Fixed redirect calls to comply with Next.js requirement for absolute URLs in API routes
+  - **OAuth Flow Completion**: OAuth flow now completes successfully and redirects users back to dashboard with proper status
+
+### Changed
+- **Google Calendar Service**: Completely refactored from service account to OAuth2 authentication
+- **API Routes**: Updated booking API to use OAuth2 tokens instead of service account credentials
+- **Environment Variables**: Simplified from `GOOGLE_SERVICE_ACCOUNT_EMAIL/PRIVATE_KEY` to `GOOGLE_CLIENT_ID/CLIENT_SECRET`
+- **Setup Documentation**: Completely rewrote `GOOGLE_CALENDAR_SETUP.md` with simple OAuth2 instructions
+- **User Experience**: Added Google Calendar connection flow with status indicators and connection prompts
+
+### Removed
+- **Service Account Complexity**: Eliminated complex service account setup and private key management
+- **Complex Permissions**: Removed need for calendar sharing and service account email management
+- **Private Key Issues**: Eliminated "DECODER routines::unsupported" errors and private key format problems
+
+### Fixed
+- **Calendar Connection Issues**: Resolved all service account authentication problems
+- **Setup Complexity**: Made Google Calendar integration accessible to non-technical users
+- **Error Messages**: Improved error handling with clear, actionable messages
+- **Google Calendar Connection Troubleshooting**: Added diagnostic endpoint and better error validation:
+  - **Configuration Test Endpoint**: Created `/api/auth/google/test` to check environment variables
+  - **Better Error Messages**: Enhanced validation with specific missing variable identification
+  - **Setup Instructions**: Clear step-by-step instructions for fixing configuration issues
+  - **Environment Variable Validation**: Added checks for required OAuth2 credentials before initialization
+
 ## [Unreleased]
+
+### Fixed
+- **Calendar Context Client Component Error**: Fixed "React Hook only works in a Client Component" error by adding `"use client"` directive to `src/contexts/calendar-context.tsx` to enable React hooks usage in the calendar context provider
+
+### Changed
+- **Booking API Enhancement**: Updated mentor booking system to include service account email as attendee:
+  - **Service Account Visibility**: Your service account email is now added as an attendee to all mentor booking events
+  - **Calendar Invitations**: You will receive calendar invitations for all scheduled mentor sessions
+  - **Booking Tracking**: Full visibility into all mentor bookings through your calendar
+  - **Error Handling**: Added validation to ensure service account email is configured
+  - **Enhanced Monitoring**: Better oversight of all mentor-mentee interactions
+
+### Fixed
+- **Private Key Decoder Error**: Fixed "DECODER routines::unsupported" error in Google Calendar integration:
+  - **Private Key Format Handling**: Improved private key parsing to handle various formats (quoted strings, escaped newlines)
+  - **PEM Validation**: Added validation to ensure private key has correct PEM format with proper headers
+  - **Enhanced Error Handling**: Added specific error messages for different authentication failures
+  - **Better Debugging**: Improved logging to help diagnose private key format issues
+  - **JWT Authentication**: Added try-catch around JWT initialization with detailed error reporting
+- **Time Conversion Error**: Fixed "Invalid time value" error in booking system:
+  - **12-Hour to 24-Hour Conversion**: Added proper time format conversion function
+  - **Date Object Creation**: Fixed invalid date string construction that was causing the error
+  - **Time Format Handling**: Properly converts "9:00 AM" format to "09:00" for Date objects
+  - **Enhanced Logging**: Added debugging logs to track time conversion process
+  - **Error Prevention**: Prevents invalid Date object creation that was causing crashes
+- **Booking Form Validation**: Fixed "Please fill in all required fields" error with improved validation:
+  - **Session Topic Requirement**: Made session topic field clearly required with asterisk and updated placeholder
+  - **Better Validation Logic**: Added proper empty string checking with `.trim()` to prevent whitespace-only submissions
+  - **Specific Error Messages**: Now shows exactly which fields are missing instead of generic message
+  - **Button State**: Updated button disabled state to include session topic validation
+  - **Enhanced Debugging**: Added comprehensive logging to help identify validation issues
+  - **User Experience**: Clearer indication of required fields and better error feedback
+- **Booking Creation Failure**: Fixed "Failed to create booking" error by removing service account email from attendees list:
+  - **Service Account Issue**: Service account emails don't receive calendar invitations like regular user emails
+  - **Simplified Attendees**: Now only includes mentor and user emails as attendees
+  - **Enhanced Logging**: Added comprehensive logging to help debug future booking issues
+  - **Better Error Messages**: Improved error responses with detailed error information
+  - **Service Initialization**: Added logging for Google Calendar service initialization
+
+### Changed
+- **Calendar Event Organizer**: Added configurable organizer email for all mentor booking events:
+  - **Default Organizer**: Set "abid@tbdc.com" as the default organizer for all calendar events
+  - **Environment Variable**: Added `GOOGLE_CALENDAR_ORGANIZER_EMAIL` for easy configuration
+  - **Easy Customization**: Can change organizer email anytime by updating the environment variable
+  - **Event Ownership**: All mentor booking events now show the specified email as the organizer
+  - **Enhanced Logging**: Added organizer email to service initialization and event creation logs
+  - **Service Account Issue**: Service account emails don't receive calendar invitations like regular user emails
+  - **Simplified Attendees**: Now only includes mentor and user emails as attendees
+  - **Enhanced Logging**: Added comprehensive logging to help debug future booking issues
+  - **Better Error Messages**: Improved error responses with detailed error information
+  - **Service Initialization**: Added logging for Google Calendar service initialization
+- **Surge Auto-Authentication**: Implemented automatic user authentication for the Surge platform:
+  - **Auto-Sign In**: Users are automatically signed in as a demo founder account when visiting the Surge page
+  - **Seamless Access**: No manual authentication required - users gain immediate access to all mentor booking features
+  - **Demo Account**: Uses the existing demo founder account for full platform access
+  - **Loading States**: Added proper loading indicators during auto-authentication process
+  - **Simplified Layout**: Removed authentication checks from Surge layout since it's handled in the page
+  - **Updated Navigation**: All Surge links now point directly to authenticated dashboard areas
+  - **Removed Calendar Status**: Eliminated calendar connection status display since it's no longer needed
+- **Google Calendar Integration Architecture**: Completely refactored Google Calendar integration to use service account authentication instead of OAuth2:
+  - **Service Account Authentication**: Replaced OAuth2 flow with service account credentials for server-side calendar management
+  - **Automatic Event Creation**: System now automatically creates calendar events without requiring user authentication
+  - **Google Meet Integration**: Added automatic Google Meet link generation for virtual mentor sessions
+  - **Simplified Booking Flow**: Removed Google Calendar connection requirement from booking process
+  - **Updated API Endpoints**: Modified `/api/bookings/create` to work with service account credentials
+  - **Enhanced Security**: Service account credentials stored securely in environment variables
+  - **Removed OAuth Routes**: Deleted unused OAuth authentication API routes (`/api/auth/google`)
+  - **Updated Documentation**: Completely revised `GOOGLE_CALENDAR_SETUP.md` with service account setup instructions
+  - **Environment Variables**: Changed from `GOOGLE_CLIENT_ID/SECRET` to `GOOGLE_SERVICE_ACCOUNT_EMAIL/PRIVATE_KEY`
+  - **Calendar Permissions**: Service account now manages calendar events on behalf of the system
+  - **No User Interaction**: Users no longer need to connect their Google Calendar accounts
+
+### Added
+- **Google Calendar Integration for Surge Mentors**: Implemented comprehensive Google Calendar integration for the Surge mentors booking system:
+  - **OAuth 2.0 Authentication**: Secure Google Calendar authentication flow with proper token management
+  - **Automatic Calendar Events**: Creates calendar events when booking mentor sessions with proper scheduling
+  - **Email Invitations**: Sends calendar invitations to both mentor and mentee automatically
+  - **Calendar Sync Status**: Visual indicators showing calendar connection status in booking interface
+  - **Google Calendar Links**: Direct links to view events in Google Calendar from booking details
+  - **API Routes**: Complete API implementation for Google Calendar authentication and event creation
+  - **Calendar Connection Modal**: User-friendly modal for connecting Google Calendar account
+  - **React Context**: Calendar connection state management across the application
+  - **Setup Documentation**: Comprehensive setup guide for Google Calendar API configuration
+
+### Technical
+- **Google Calendar Service**: Created GoogleCalendarService class for calendar operations with OAuth handling
+- **Dependencies**: Added googleapis and @google-cloud/local-auth for Google Calendar API integration
+- **Environment Configuration**: Added environment variables for Google OAuth credentials
+- **Token Management**: Implemented secure token storage and management system
+- **Error Handling**: Comprehensive error handling for calendar operations and authentication
 
 ### Changed
 - **Meetings Page Structure Update**: Updated meetings page to match sessions page structure and remove unnecessary elements:
